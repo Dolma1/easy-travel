@@ -53,7 +53,7 @@ const Activate = () => {
 
   return (
     <>
-      <div className="flex items-center h-screen justify-center">
+      <div className="flex items-center h-screen justify-center  bg-[#586BAF]">
         <Card className="lg:w-1/4 text-center  ">
           <CardHeader>
             <CardTitle>Verify Your Email</CardTitle>

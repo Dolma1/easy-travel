@@ -28,9 +28,9 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       const res = await storeLogin(data).unwrap();
-      console.log(res)
       dispatch(setCredentials({ user: res.user }));
-      navigate("/");
+      // navigate("/");
+      navigate("/dashboard");
       toast.success("Login Successfull");
     } catch (error) {
       toast.error("Invalid Email or Password");
@@ -38,8 +38,8 @@ const Login = () => {
   };
 
   return (
-    <div className=" flex items-center h-screen justify-center ">
-      <Card className="w-1/4">
+    <div className=" flex items-center h-screen justify-center bg-[#586BAF] ">
+      <Card className="w-1/4 bg">
         <CardHeader>
           <CardTitle className="text-center">Login to your account</CardTitle>
         </CardHeader>
