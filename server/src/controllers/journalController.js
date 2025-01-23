@@ -1,224 +1,199 @@
-import Journal from "../models/journalModel.js";
+import Journal from "../models/JournalModel.js";
 import { v4 as uuidv4 } from "uuid";
-import cloudinary from 'cloudinary'
-export const createJournal = async (req, res, next) => {
-  try {
-    const {title, body} = req.body
-    const slug = uuidv4()
-    const user = req.user._id
-    
-    let photo = `https://images.unsplash.com/photo-1707343848552-893e05dba6ac?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`
-  
-    const createdJournal = await Journal.create({
-      title,
-      body,
-      photo,
-      slug,
-      user
-    })
+import User from "../models/UserModel.js";
+import cloudinary from "cloudinary";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
+import ErrorHandler from "../utils/ErrorHandler.js";
 
+class JournalController {
+  static createJournal = asyncHandler(async (req, res, next) => {
+    try {
+      const {
+        title,
+        content,
+        mood,
+        location,
+        tags,
+        isPrivate = true,
+      } = req.body;
 
+      if (!title && !content && !tags && !req.body.images) {
+        let errors = {
+          title: "Title is required",
+          content: "Content is required",
+          tags: "At least one Tag is required",
+          images: "At least one image is required",
+        };
+        return next(new ErrorHandler("Journal Creation Failed!", 404, errors));
+      }
 
-    
-    return res.json(createdJournal);
-  } catch (error) {
-    next(error);
-  }
-};
+      // Handle Image section using cloudinary
+      let images = [];
 
+      // If images are passed as a string (for a single image)
+      if (typeof req.body.images === "string") {
+        images.push(req.body.images);
+      } else {
+        images = req.body.images;
+      }
 
-export const getJournal = async(req,res,next) =>{
-  try {
-    const userId = req.user._id;
+      // Now uploading the images to Cloudinary
+      const imagesLinks = [];
+      for (let i = 0; i < images.length; i++) {
+        const result = await cloudinary.v2.uploader.upload(images[i], {
+          folder: "posts",
+          quality: "auto:best",
+          height: 600,
+        });
 
-    // Fetch all journals where the user matches the logged-in user
-    const journals = await Journal.find({ user: userId });
+        // Storing the image links and public_id
+        imagesLinks.push({
+          public_id: result.public_id,
+          url: result.secure_url,
+        });
+      }
 
-    // Return the fetched journals
-    return res.status(200).json(journals);
-  } catch (error) {
-    next(error)
-  }
+      // Increment the user Journal Entry
+      await User.findByIdAndUpdate(req.user._id, {
+        $inc: { journalEntries: 1 },
+      });
+
+      // Create a new Journal
+      let journal = await Journal.create({
+        author: req.user._id,
+        title,
+        content,
+        mood,
+        location,
+        tags,
+        isPrivate,
+        images: imagesLinks,
+      });
+
+      return res.status(201).json({ success: true, journal });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  });
+
+  static getAllJournal = asyncHandler(async (req, res, next) => {
+    try {
+      const user = req.user;
+      const allJournals = await Journal.find({ author: user._id });
+      if (!allJournals || allJournals.length === 0) {
+        return next(new ErrorHandler("No Journals Found", 404));
+      }
+      return res.status(200).json({ success: true, allJournals });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  });
+
+  static updateJournal = asyncHandler(async (req, res, next) => {
+    try {
+      const id = req.params.id;
+      // console.log(id)
+      const { title, content, mood, location, tags, isPrivate } =
+        req.body;
+
+      // Handle Image Updation logic as well.
+      // Handle Image section using cloudinary
+      let images = [];
+
+      // If images are passed as a string (for a single image)
+      if (typeof req.body.images === "string") {
+        images.push(req.body.images);
+      } else {
+        images = req.body.images;
+      }
+
+      // Now uploading the images to Cloudinary
+      const imagesLinks = [];
+      for (let i = 0; i < images.length; i++) {
+        const result = await cloudinary.v2.uploader.upload(images[i], {
+          folder: "posts",
+          quality: "auto:best",
+          height: 600,
+        });
+
+        // Storing the image links and public_id
+        imagesLinks.push({
+          public_id: result.public_id,
+          url: result.secure_url,
+        });
+      }
+
+      const updatedJournal = await Journal.findByIdAndUpdate(
+        id,
+        {
+          title,
+          content,
+          mood,
+          location,
+          tags,
+          images: imagesLinks,
+          isPrivate,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+
+      if (!updatedJournal) {
+        return next(new ErrorHandler("Journal was not found", 400));
+      }
+
+      return res.status(201).json({ success: true, journal: updatedJournal });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  });
+
+  static deleteJournal = asyncHandler(async (req, res, next) => {
+    try {
+      const id = req.params.id;
+
+      const author = await User.findById(req.user._id);
+
+      if (!author) {
+        return res
+          .status(404)
+          .json({ success: false, message: "Author not found!" });
+      }
+
+      const deletedJournal = await Journal.findByIdAndDelete(id);
+
+      if (!deletedJournal) {
+        return next(new ErrorHandler("Journal was not found", 400));
+      }
+
+      // Decrement the user Journal Entries
+      await User.findByIdAndUpdate(req.user._id, {
+        $inc: { journalEntries: -1 },
+      });
+
+      return res
+        .status(200)
+        .json({ status: true, message: "Journal was deleted Successfully" });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  });
+
+  static getSingleJournal = asyncHandler(async (req, res, next) => {
+    try {
+      const id = req.params.id;
+      const journal = await Journal.findById(id);
+
+      if (!journal) {
+        return next(new ErrorHandler("Journal not found", 404));
+      }
+      return res.status(200).json({ success: true, journal });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  });
 }
 
-// export const updatePost = async (req, res, next) => {
-//   try {
-//     const post = await Post.findOne({ slug: req.params.slug });
-
-//     if (!post) {
-//       const error = new Error("Post aws not found");
-//       next(error);
-//       return;
-//     }
-
-//     const upload = uploadPicture.single("postPicture");
-
-//     const handleUpdatePostData = async (data) => {
-//       const { title, caption, slug, body, tags, categories } = JSON.parse(data);
-//       post.title = title || post.title;
-//       post.caption = caption || post.caption;
-//       post.slug = slug || post.slug;
-//       post.body = body || post.body;
-//       post.tags = tags || post.tags;
-//       post.categories = categories || post.categories;
-//       const updatedPost = await post.save();
-//       return res.json(updatedPost);
-//     };
-
-//     upload(req, res, async function (err) {
-//       if (err) {
-//         const error = new Error(
-//           "An unknown error occured when uploading " + err.message
-//         );
-//         next(error);
-//       } else {
-//         // every thing went well
-//         if (req.file) {
-//           let filename;
-//           filename = post.photo;
-//           if (filename) {
-//             fileRemover(filename);
-//           }
-//           post.photo = req.file.filename;
-//           handleUpdatePostData(req.body.document);
-//         } else {
-//           let filename;
-//           filename = post.photo;
-//           post.photo = "";
-//           fileRemover(filename);
-//           handleUpdatePostData(req.body.document);
-//         }
-//       }
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// export const deletePost = async (req, res, next) => {
-//   try {
-//     const post = await Post.findOneAndDelete({ slug: req.params.slug });
-
-//     if (!post) {
-//       const error = new Error("Post was not found");
-//       return next(error);
-//     }
-
-//     fileRemover(post.photo);
-
-//     await Comment.deleteMany({ post: post._id });
-
-//     return res.json({
-//       message: "Post is successfully deleted",
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// export const getPost = async (req, res, next) => {
-//   try {
-//     const post = await Post.findOne({ slug: req.params.slug }).populate([
-//       {
-//         path: "user",
-//         select: ["avatar", "name"],
-//       },
-//       {
-//         path: "categories",
-//         select: ["title"],
-//       },
-//       {
-//         path: "comments",
-//         match: {
-//           check: true,
-//           parent: null,
-//         },
-//         populate: [
-//           {
-//             path: "user",
-//             select: ["avatar", "name"],
-//           },
-//           {
-//             path: "replies",
-//             match: {
-//               check: true,
-//             },
-//             populate: [
-//               {
-//                 path: "user",
-//                 select: ["avatar", "name"],
-//               },
-//             ],
-//           },
-//         ],
-//       },
-//     ]);
-
-//     if (!post) {
-//       const error = new Error("Post was not found");
-//       return next(error);
-//     }
-
-//     return res.json(post);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// export const getAllPosts = async (req, res, next) => {
-//   try {
-//     const filter = req.query.searchKeyword;
-//     const categories = req.query.categories
-//       ? req.query.categories.split(",")
-//       : []; // Expecting categories to be comma-seperated
-
-//     let where = {};
-
-//     if (filter) {
-//       where.title = { $regex: filter, $options: "i" };
-//     }
-
-//     if (categories.length > 0) {
-//       where.categories = { $in: categories };
-//     }
-
-//     let query = Post.find(where);
-//     const page = parseInt(req.query.page) || 1;
-//     const pageSize = parseInt(req.query.limit) || 10;
-//     const skip = (page - 1) * pageSize;
-//     const total = await Post.find(where).countDocuments();
-//     const pages = Math.ceil(total / pageSize);
-
-//     res.header({
-//       "x-filter": filter,
-//       "x-totalcount": JSON.stringify(total),
-//       "x-currentpage": JSON.stringify(page),
-//       "x-pagesize": JSON.stringify(pageSize),
-//       "x-totalpagecount": JSON.stringify(pages),
-//     });
-
-//     if (page > pages) {
-//       return res.json([]);
-//     }
-
-//     const result = await query
-//       .skip(skip)
-//       .limit(pageSize)
-//       .populate([
-//         {
-//           path: "user",
-//           select: ["avatar", "name", "verified"],
-//         },
-//         {
-//           path: "categories",
-//           select: ["title"],
-//         },
-//       ])
-//       .sort({ updatedAt: "desc" });
-
-//     return res.json(result);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
+export default JournalController;

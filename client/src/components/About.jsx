@@ -1,6 +1,11 @@
+import { Footer } from ".";
+import Nav from "./Nav";
+
 const About = () => {
+  const isAbout = location.pathname === "/about" 
   return (
     <>
+    {isAbout && <Nav />}
       <div className="mx-auto px-4 py-16 md:px-10 lg:px-20 mt-14 ">
         <h1 className="mt-2 text-4xl  text-center font-extrabold text-gray-900 sm:text-4xl">
           About
@@ -83,6 +88,8 @@ const About = () => {
           </div>
         </div>
       </div>
+    {isAbout && <Footer />}
+
     </>
   );
 };

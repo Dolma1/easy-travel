@@ -1,39 +1,18 @@
 import { ToastContainer, Bounce } from "react-toastify";
-import { Route, Routes, useLocation } from "react-router-dom";
-import { Login, Register, Activate, Header, Dashboard } from "./components";
-import { HomePage } from "./pages";
-import PrivateRoute from "./routes/PrivateRoute";
-import Journal from "./components/Header/DashBoard/Journal";
+import { useLocation } from "react-router-dom";
+import { Footer, Header } from "./components";
+import { Outlet } from "react-router-dom";
 function App() {
   const location = useLocation();
   const isLogin = location.pathname === "/login" || "/register";
   return (
     <>
       {!isLogin && <Header />}
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/activate" element={<Activate />} />
-        <Route path="/" element={<HomePage />} />
-
-        {/* Use the PrivateRoute for the dashboard */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/journal"
-          element={
-            <PrivateRoute>
-              <Journal />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
+        <div>
+          <Outlet/>
+        </div>
+      {!isLogin && <Footer/>}
+      
 
       <ToastContainer
         position="top-right"

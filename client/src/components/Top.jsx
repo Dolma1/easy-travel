@@ -27,11 +27,11 @@ const Top = () => {
             </p>
             <Button>Create Your Free Account</Button>
           </div>
-          <div className="-mt-12">
+          <div className="">
             <img
-              src="./girl3.png"
+              src="./boy1.png"
               alt="bg"
-              className=" h-auto  w-[400px] sm:w-[420px] md:w-[400px] lg:w-[480px]"
+              className=" h-auto  w-[400px] sm:w-[420px] md:w-[400px] lg:w-[400px]"
             />
           </div>
         </div>

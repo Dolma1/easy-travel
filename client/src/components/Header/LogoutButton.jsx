@@ -5,7 +5,7 @@ import { logout as logoutStore } from "../../app/slices/authSlice";
 import { toast } from "react-toastify";
 import {LogOut} from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-const LogoutButton = () => {
+const LogoutButton = ({className=""}) => {
   const [logout, { isLoading }] = useLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const LogoutButton = () => {
     }
   };
   return (
-    <Button onClick={handleLogout} disabled={isLoading}>
+    <Button onClick={handleLogout} disabled={isLoading} className={`${className}`}>
      <LogOut/> Logout
     </Button>
   );

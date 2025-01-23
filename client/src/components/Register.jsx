@@ -6,12 +6,13 @@ import {
   CardTitle,
   CardContent,
   CardFooter,
-} from "@/components/ui/card"; // Adjust import based on your file structure
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useRegisterMutation } from "../app/slices/userApiSlice";
 import { toast } from "react-toastify";
+import { User, Mail, Lock, KeyRound, ArrowRight } from "lucide-react";
 
 const Register = () => {
   const {
@@ -20,7 +21,7 @@ const Register = () => {
     formState: { errors },
     watch,
   } = useForm();
-  const password = watch("password"); // Watch the password field for validation
+  const password = watch("password");
 
   const navigate = useNavigate();
   const [storeRegister, { isLoading }] = useRegisterMutation();
@@ -28,116 +29,171 @@ const Register = () => {
   const onSubmit = async (data) => {
     try {
       const res = await storeRegister(data);
-      console.log(res);
-      // dispatch(setCredentials(res.data));
+      console.log(data)
       navigate("/activate", {
         state: { activationToken: res.data.activationToken },
       });
-      toast.success("Please check your mail");
+      toast.success("Please check your email");
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      toast.error(error.message || "Registration failed");
     }
   };
 
   return (
-    <div className=" flex items-center justify-center h-screen bg-[#586BAF]">
-      <Card className="lg:w-1/4">
-        <CardHeader>
-          <CardTitle className="text-center">Register Your Details</CardTitle>
-        </CardHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                {...register("name", { required: "Name is required" })}
-                placeholder="Enter your name"
-                className="mt-1"
-              />
-              {errors.name && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.name.message}
-                </p>
-              )}
+    <div className="register-container flex items-center justify-center">
+      <div className="w-full max-w-md px-4">
+        <Card className="glass-card">
+          <CardHeader className="space-y-1">
+            <div className="flex justify-center mb-3">
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                <User className="w-6 h-6 text-white" />
+              </div>
             </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                {...register("email", {
-                  required: true,
-                  validate: {
-                    matchPattern: (value) =>
-                      /([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}/gim.test(value) ||
-                      "Invalid email address",
-                  },
-                })}
-                placeholder="Enter your email"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                {...register("password", {
-                  required: "Password is required",
-                  minLength: {
-                    value: 6,
-                    message: "Password must be at least 6 characters",
-                  },
-                })}
-                placeholder="Enter your password"
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                {...register("confirmPassword", {
-                  required: "Confirm Password is required",
-                  validate: (value) =>
-                    value === password || "Passwords do not match",
-                })}
-                placeholder="Confirm your password"
-              />
-              {errors.confirmPassword && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.confirmPassword.message}
-                </p>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col  space-y-4">
-            <Button type="submit" disabled={isLoading} className="w-full">
-              {isLoading ? "Submitting..." : "Register"}
-            </Button>
-            <p className="text-sm text-gray-500">
-              Already have an account?{" "}
-              <span
-                className="text-blue-500 cursor-pointer"
-                onClick={() => navigate("/login")}
-              >
-                Login
-              </span>
+            <CardTitle className="text-2xl font-bold text-center text-gray-800">
+              Create Account
+            </CardTitle>
+            <p className="text-sm text-center text-gray-600">
+              Join us and start your journey
             </p>
-          </CardFooter>
-        </form>
-      </Card>
+          </CardHeader>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-medium">
+                  Full Name
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="name"
+                    className="pl-10 input-transition"
+                    {...register("name", { required: "Name is required" })}
+                    placeholder="John Doe"
+                  />
+                </div>
+                {errors.name && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.name.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  Email Address
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    className="pl-10 input-transition"
+                    {...register("email", {
+                      required: "Email is required",
+                      validate: {
+                        matchPattern: (value) =>
+                          /([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}/gim.test(
+                            value
+                          ) || "Invalid email address",
+                      },
+                    })}
+                    placeholder="name@example.com"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="password"
+                    type="password"
+                    className="pl-10 input-transition"
+                    {...register("password", {
+                      required: "Password is required",
+                      minLength: {
+                        value: 6,
+                        message: "Password must be at least 6 characters",
+                      },
+                    })}
+                    placeholder="Create a strong password"
+                  />
+                </div>
+                {errors.password && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-medium"
+                >
+                  Confirm Password
+                </Label>
+                <div className="relative">
+                  <KeyRound className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    className="pl-10 input-transition"
+                    {...register("confirmPassword", {
+                      required: "Please confirm your password",
+                      validate: (value) =>
+                        value === password || "Passwords do not match",
+                    })}
+                    placeholder="Confirm your password"
+                  />
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex flex-col space-y-4">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-[#FF8E1F] hover:bg-[#FF8E1F]/90 text-black"
+              >
+                {isLoading ? (
+                  "Creating Account..."
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    Create Account
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                )}
+              </Button>
+
+              <p className="text-sm text-center text-gray-600">
+                Already have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => navigate("/login")}
+                  className="text-primary hover:underline font-medium"
+                >
+                  Sign in
+                </button>
+              </p>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
     </div>
   );
 };

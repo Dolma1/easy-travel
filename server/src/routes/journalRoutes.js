@@ -1,12 +1,17 @@
 import express from "express";
-import {
-  createJournal,
-  getJournal
-} from "../controllers/journalController.js";
+import JournalController from "../controllers/journalController.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 
-const journalRouter = express.Router()
+const journalRouter = express.Router();
 
-journalRouter.post('/create-journal', isAuthenticated,createJournal)
-journalRouter.get('/get-journal', isAuthenticated,getJournal)
+journalRouter.post("/", isAuthenticated, JournalController.createJournal);
+
+journalRouter.get("/", isAuthenticated, JournalController.getAllJournal);
+
+journalRouter.put("/:id", isAuthenticated, JournalController.updateJournal);
+
+journalRouter.delete("/:id", isAuthenticated, JournalController.deleteJournal);
+
+journalRouter.get("/:id", isAuthenticated, JournalController.getSingleJournal);
+
 export default journalRouter;

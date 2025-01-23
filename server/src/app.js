@@ -1,8 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import userRoutes from './routes/userRoutes.js'
-import journalRoutes from './routes/journalRoutes.js'
 import { ErrorMiddleware } from './middlewares/ErrorMiddleware.js';
 const app = express();
 
@@ -33,14 +31,15 @@ app.use(cookieParser());
 
 
 // Routes configuration for the authentication
-app.use('/api/v1/user', userRoutes);
-app.use('/api/v1/journal', journalRoutes);
+import router from './routes/index.js';
+app.use('/', router);
+
 
 // TEST ROUTES
 app.get('/test', (req, res, next) => {
   res.status(200).json({
     success: true,
-    message: 'Creators Club Working Fine',
+    message: 'Easy Travel Working Fine',
   });
 });
 

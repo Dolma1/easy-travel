@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { setCredentials } from "../app/slices/authSlice";
 import { useLoginMutation } from "../app/slices/userApiSlice";
 import { toast } from "react-toastify";
+import { Lock, Mail, ArrowRight } from "lucide-react";
+
 const Login = () => {
   const {
     register,
@@ -29,77 +31,115 @@ const Login = () => {
     try {
       const res = await storeLogin(data).unwrap();
       dispatch(setCredentials({ user: res.user }));
-      // navigate("/");
       navigate("/dashboard");
-      toast.success("Login Successfull");
+      toast.success("Login Successful");
     } catch (error) {
       toast.error("Invalid Email or Password");
     }
   };
 
   return (
-    <div className=" flex items-center h-screen justify-center bg-[#586BAF] ">
-      <Card className="w-1/4 bg">
-        <CardHeader>
-          <CardTitle className="text-center">Login to your account</CardTitle>
-        </CardHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                {...register("email", {
-                  required: "Enter your email",
-                  validate: {
-                    matchPattern: (value) =>
-                      /([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}/gim.test(value) ||
-                      "Invalid email address",
-                  },
-                })}
-                placeholder="Enter your email"
-              />
-              {errors.email && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.email.message}
-                </p>
-              )}
+    <div className="login-container min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-md px-4">
+        <Card className="glass-card">
+          <CardHeader className="space-y-1">
+            <div className="flex justify-center mb-4">
+              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                <Lock className="w-6 h-6 text-white" />
+              </div>
             </div>
-
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                {...register("password", { required: "Password is required" })}
-                placeholder="Enter your password"
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-          </CardContent>
-
-          <CardFooter className="flex flex-col  space-y-4">
-            <Button type="submit" disabled={isLoading} className="w-full">
-              {isLoading ? "Submitting..." : "Login"}
-            </Button>
-
-            <p className="text-sm text-gray-500">
-              Don&apos;t have an account?{" "}
-              <span
-                className="text-blue-500 cursor-pointer"
-                onClick={() => navigate("/register")}
-              >
-                Signup
-              </span>
+            <CardTitle className="text-2xl font-bold text-center text-gray-800">
+              Welcome Back
+            </CardTitle>
+            <p className="text-sm text-center text-gray-600">
+              Enter your credentials to access your account
             </p>
-          </CardFooter>
-        </form>
-      </Card>
+          </CardHeader>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-medium">
+                  Email Address
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="email"
+                    type="email"
+                    className="pl-10 input-transition"
+                    {...register("email", {
+                      required: "Email is required",
+                      validate: {
+                        matchPattern: (value) =>
+                          /([\w\.\-_]+)?\w+@[\w-_]+(\.\w+){1,}/gim.test(
+                            value
+                          ) || "Invalid email address",
+                      },
+                    })}
+                    placeholder="name@example.com"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <Input
+                    id="password"
+                    type="password"
+                    className="pl-10 input-transition"
+                    {...register("password", {
+                      required: "Password is required",
+                    })}
+                    placeholder="Enter your password"
+                  />
+                </div>
+                {errors.password && (
+                  <p className="text-destructive text-sm mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex flex-col space-y-4">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-[#FF8E1F] hover:bg-[#FF8E1F]/90 text-black"
+              >
+                {isLoading ? (
+                  "Signing in..."
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    Sign In
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                )}
+              </Button>
+
+              <p className="text-sm text-center text-gray-600">
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => navigate("/register")}
+                  className="text-primary hover:underline font-medium"
+                >
+                  Create account
+                </button>
+              </p>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
     </div>
   );
 };

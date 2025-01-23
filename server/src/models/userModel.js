@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your name"],
     },
+
     email: {
       type: String,
       required: [true, "Please enter your email"],
@@ -21,20 +22,38 @@ const userSchema = new mongoose.Schema(
       },
       unique: true,
     },
+
     password: {
       type: String,
       minlength: [6, "Password must be at least 6 characters"],
       select: false,
     },
+
     isVerified: {
       type: Boolean,
-      default:false
+      default: false,
     },
+
+    address: {
+      type: String,
+    },
+
+    phone: {
+      type: String,
+    },
+
+    journalStats: {
+      totalEntries: { type: Number, default: 0 },
+      publicEntries: { type: Number, default: 0 },
+      privateEntries: { type: Number, default: 0 },
+    },
+
     role: {
       type: String,
-      enum: ["user", "admin", "dentist"],
+      enum: ["user", "admin"],
       default: "user",
     },
+
     avatar: {
       public_id: String,
       url: String,
