@@ -22,6 +22,7 @@ const expenseSchema = new mongoose.Schema(
       currency: {
         type: String,
         required: true,
+        default:'NPR'
       },
     },
     category: {
@@ -79,3 +80,6 @@ const expenseSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+const Expense = mongoose.model("Expense", expenseSchema);
+export default Expense;
