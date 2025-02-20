@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
 import {
   Select,
   SelectContent,
@@ -19,11 +18,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import Side_bar from "./Side_bar";
-// import { LogoutButton } from '../Header/LogoutButton';
-// import { LogoutButton } from '../Header/LogoutButton';
+import { ScrollArea } from "../ui/scroll-area"; // Ensure this is correctly imported
 
-function App() {
+function Dashboard() {
   const [monthlyBudget] = useState(5000);
   const [currentSpent] = useState(3250);
 
@@ -56,6 +53,14 @@ function App() {
       date: "2024-03-17",
       category: "Transportation",
     },
+    // Add more transactions to test scrolling
+    ...Array.from({ length: 20 }, (_, i) => ({
+      id: i + 5,
+      description: `Transaction ${i + 5}`,
+      amount: -Math.random() * 100,
+      date: `2024-03-${17 - i}`,
+      category: ["Food", "Transportation", "Entertainment", "Others"][i % 4],
+    })),
   ];
 
   const spendingByCategory = [
@@ -67,107 +72,103 @@ function App() {
   ];
 
   return (
-    <div className="flex min-h-screen bg-background">
-      {/* Sidebar */}
-      <div>
-        <Side_bar />
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-8">
-          <div className="mx-auto max-w-7xl space-y-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-4xl font-bold">Dashboard</h1>
-                <p className="text-muted-foreground">
-                  Track your travel spending and savings
-                </p>
-              </div>
-              <div className="flex gap-4">
-                <Select defaultValue="march">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select month" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="march">March 2024</SelectItem>
-                    <SelectItem value="february">February 2024</SelectItem>
-                    <SelectItem value="january">January 2024</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Expense
-                </Button>
-              </div>
+    <div className="flex-1 overflow-auto">
+      <div className="py-5 px-8">
+        <div className="mx-auto max-w-7xl space-y-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold">Dashboard</h1>
+              <p className="text-muted-foreground">
+                Track your travel spending and savings
+              </p>
             </div>
-
-            {/* Overview Cards */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              <Card className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-900">
-                    <DollarSign className="h-6 w-6 text-blue-700 dark:text-blue-300" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Monthly Budget
-                    </p>
-                    <p className="text-2xl font-bold">
-                      ${monthlyBudget.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="rounded-full bg-green-100 p-3 dark:bg-green-900">
-                    <TrendingDown className="h-6 w-6 text-green-700 dark:text-green-300" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Spent this Month
-                    </p>
-                    <p className="text-2xl font-bold">
-                      ${currentSpent.toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="rounded-full bg-purple-100 p-3 dark:bg-purple-900">
-                    <TrendingUp className="h-6 w-6 text-purple-700 dark:text-purple-300" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Remaining</p>
-                    <p className="text-2xl font-bold">
-                      ${(monthlyBudget - currentSpent).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-              <Card className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="rounded-full bg-orange-100 p-3 dark:bg-orange-900">
-                    <BarChart3 className="h-6 w-6 text-orange-700 dark:text-orange-300" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Budget Used</p>
-                    <p className="text-2xl font-bold">
-                      {((currentSpent / monthlyBudget) * 100).toFixed(1)}%
-                    </p>
-                  </div>
-                </div>
-              </Card>
+            <div className="flex gap-4">
+              <Select defaultValue="march">
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select month" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="march">March 2024</SelectItem>
+                  <SelectItem value="february">February 2024</SelectItem>
+                  <SelectItem value="january">January 2024</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Expense
+              </Button>
             </div>
+          </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              {/* Recent Transactions */}
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-4">
-                  Recent Transactions
-                </h2>
+          {/* Overview Cards */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-900">
+                  <DollarSign className="h-6 w-6 text-blue-700 dark:text-blue-300" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Monthly Budget
+                  </p>
+                  <p className="text-2xl font-bold">
+                    ${monthlyBudget.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="rounded-full bg-green-100 p-3 dark:bg-green-900">
+                  <TrendingDown className="h-6 w-6 text-green-700 dark:text-green-300" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    Spent this Month
+                  </p>
+                  <p className="text-2xl font-bold">
+                    ${currentSpent.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="rounded-full bg-purple-100 p-3 dark:bg-purple-900">
+                  <TrendingUp className="h-6 w-6 text-purple-700 dark:text-purple-300" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Remaining</p>
+                  <p className="text-2xl font-bold">
+                    ${(monthlyBudget - currentSpent).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+            </Card>
+            <Card className="p-6">
+              <div className="flex items-center gap-4">
+                <div className="rounded-full bg-orange-100 p-3 dark:bg-orange-900">
+                  <BarChart3 className="h-6 w-6 text-orange-700 dark:text-orange-300" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Budget Used</p>
+                  <p className="text-2xl font-bold">
+                    {((currentSpent / monthlyBudget) * 100).toFixed(1)}%
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Recent Transactions */}
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">
+                Recent Transactions
+              </h2>
+              <ScrollArea className="h-[39vh]">
+                {" "}
+                {/* Set a fixed height for scrolling */}
                 <div className="space-y-4">
                   {recentTransactions.map((transaction) => (
                     <div
@@ -210,13 +211,17 @@ function App() {
                     </div>
                   ))}
                 </div>
-              </Card>
+              </ScrollArea>
+            </Card>
 
-              {/* Spending by Category */}
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold mb-4">
-                  Spending by Category
-                </h2>
+            {/* Spending by Category */}
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">
+                Spending by Category
+              </h2>
+              <ScrollArea className="h-[39vh]">
+                {" "}
+                {/* Set a fixed height for scrolling */}
                 <div className="space-y-4">
                   {spendingByCategory.map((category) => (
                     <div key={category.category} className="space-y-2">
@@ -231,8 +236,8 @@ function App() {
                     </div>
                   ))}
                 </div>
-              </Card>
-            </div>
+              </ScrollArea>
+            </Card>
           </div>
         </div>
       </div>
@@ -240,4 +245,4 @@ function App() {
   );
 }
 
-export default App;
+export default Dashboard;

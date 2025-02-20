@@ -6,27 +6,35 @@ import {
   Wallet,
   Menu,
   NotebookPen,
+  UsersRound,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Link } from "react-router-dom";
-import { LogoutButton } from "..";
+import { Link, useLocation } from "react-router-dom";
+import LogoutButton from "@/components/Header/LogoutButton";
 
-const Side_bar = () => {
+const SideBar = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const location = useLocation();
+
   const navigationItems = [
-    { icon: LayoutDashboard, label: "Dashboard", active: true, href: "/dashboard" },
+    {
+      icon: LayoutDashboard,
+      label: "Dashboard",
+      href: "/dashboard",
+    },
     { icon: NotebookPen, label: "Journal", href: "/journal" },
-    { icon: Wallet, label: "Budgets" },
-    { icon: PieChart, label: "Reports" },
-    { icon: Settings, label: "Settings" },
+    { icon: UsersRound, label: "Group", href: "/groups" },
+    { icon: Wallet, label: "Budgets", href: "/budgets" },
+    { icon: PieChart, label: "Reports", href: "/reports" },
+    { icon: Settings, label: "Settings", href: "/settings" },
   ];
 
   return (
     <div
       className={cn(
-        "flex h-screen flex-col border-r bg-card transition-all duration-300",
+        "flex h-screen flex-col border-r  bg-card transition-all duration-300",
         isSidebarCollapsed ? "w-[80px]" : "w-[250px]"
       )}
     >
@@ -47,8 +55,9 @@ const Side_bar = () => {
           {navigationItems.map((item) => (
             <Link to={item.href} key={item.label}>
               <Button
-                key={item.label}
-                variant={item.active ? "secondary" : "ghost"}
+                variant={
+                  location.pathname === item.href ? "secondary" : "ghost"
+                }
                 className={cn(
                   "w-full justify-start",
                   isSidebarCollapsed ? "px-3" : "px-4"
@@ -64,10 +73,13 @@ const Side_bar = () => {
         </nav>
       </div>
       <div className="border-t p-4">
-        <LogoutButton className="bg-no w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/50" />
+        <LogoutButton
+          className="bg-no w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/50"
+          isSidebarCollapsed={isSidebarCollapsed} // Pass this prop
+        />
       </div>
     </div>
   );
 };
 
-export default Side_bar;
+export default SideBar;

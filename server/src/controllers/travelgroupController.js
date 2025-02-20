@@ -2,19 +2,13 @@ import TravelGroup from "../models/TravelGroupModel.js";
 import User from "../models/UserModel.js";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
+import Expense from "../models/ExpenseModel.js";
 
 class TravelGroupController {
   /** GROUPS CREATION AND DELETION FUNCTIONALITY */
   static createGroup = asyncHandler(async (req, res, next) => {
-    const {
-      name,
-      description,
-      startDate,
-      endDate,
-      destination,
-      currency,
-      budget,
-    } = req.body;
+    const { name, startDate, endDate, destination, budget, currency } =
+      req.body;
     const creatorId = req.user._id;
     try {
       if (!name || !creatorId) {
@@ -30,7 +24,8 @@ class TravelGroupController {
       // Creating the GROUP
       const newGroup = new TravelGroup({
         name,
-        description,
+        currency,
+
         creator: creatorId,
         members: [
           {
@@ -46,7 +41,6 @@ class TravelGroupController {
           destination,
           status: "planning", // Default status
         },
-        currency: currency || "NRS", // Default to USD if not provided
         budget: Number(budget) || 0,
         totalExpenses: 0, // Initial total expenses
         isActive: true, // Group is active by default
@@ -63,7 +57,6 @@ class TravelGroupController {
       return next(new ErrorHandler(error.message, 500));
     }
   });
-  
   static deleteGroup = asyncHandler(async (req, res, next) => {});
 
   /* TOGGLE MEMBERS FUNCTIONALITY */
@@ -118,11 +111,13 @@ class TravelGroupController {
       if (!group) {
         return next(new ErrorHandler("Group not found", 404));
       }
+      
 
       // Check if the user is the creator or a member of the group
-      const isCreator = group.creator.toString() === userId.toString();
+      const isCreator = group.creator._id.toString() === userId.toString();
+
       const isMember = group.members.some(
-        (member) => member.user.toString() === userId.toString()
+        (member) => member.user._id.toString() === userId.toString()
       );
 
       // If the user is neither the creator nor a member, return a 403 error
@@ -135,6 +130,31 @@ class TravelGroupController {
       return res.status(200).json({
         success: true,
         group,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  });
+
+  static fetchGroupExpenses = asyncHandler(async (req, res, next) => {
+    const groupid = req.params.id;
+
+    try {
+      // Find the group
+      const group = await TravelGroup.findById(groupid);
+      if (!group) {
+        return next(new ErrorHandler("Group not found", 404));
+      }
+
+      // Fetch all expenses for the group
+      const expenses = await Expense.find({ group: groupid })
+        .populate("paidBy", "name email")
+        .populate("splitBetween.user", "name email");
+
+      res.status(200).json({
+        success: true,
+        count: expenses.length,
+        expenses,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));

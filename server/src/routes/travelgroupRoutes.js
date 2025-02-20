@@ -26,4 +26,9 @@ travelGroupRouter.get(
   TravelGroupController.fetchSingleGroup
 );
 
+travelGroupRouter.get(
+  "/all-expenses/:id",
+  isAuthenticated,
+  TravelGroupController.fetchGroupExpenses
+);
 export default travelGroupRouter;

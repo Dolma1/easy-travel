@@ -1,17 +1,19 @@
-import Nav from "@/components/Nav";
-import About from "@/components/About";
-import Features from "@/components/Features";
-import Top from "@/components/Top";
-import { Footer } from "@/components";
-import Work from "@/components/Work";
-import Testimonial from "@/components/Testimonial";
-import BentoBox1 from "@/components/BentoBox";
-import Faq from "@/components/FAQ";
+import {
+  Header,
+  Footer,
+  Top,
+  Features,
+  About,
+  Work,
+  Testimonial,
+  BentoBox,
+  Faq,
+} from "../components/index";
 
 const HomePage = () => {
   return (
     <>
-      <Nav />
+      <Header />
       <section>
         <Top />
       </section>
@@ -19,7 +21,7 @@ const HomePage = () => {
         <Features />
       </section>
       <section className="bg-[#5f5e5e]">
-        <BentoBox1 />
+        <BentoBox />
       </section>
       <section className="">
         <About />
@@ -33,7 +35,6 @@ const HomePage = () => {
       <section className="bg-[#EEEEEE] ">
         <Testimonial />
       </section>
- 
       <Footer />
     </>
   );

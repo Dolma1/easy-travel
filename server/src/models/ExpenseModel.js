@@ -38,15 +38,13 @@ const expenseSchema = new mongoose.Schema(
       required: true,
     },
     paidBy: {
-      user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true,
-      },
-      paymentMethod: {
-        type: String,
-        enum: ["cash", "card", "upi", "other"],
-      },
+    },
+    paymentMethod: {
+      type: String,
+      enum: ["cash", "khalti", "other"],
     },
     splitBetween: [
       {

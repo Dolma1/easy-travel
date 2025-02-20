@@ -14,4 +14,14 @@ userRouter.post("/logout", isAuthenticated, UserController.logoutUser);
 
 userRouter.get("/profile", isAuthenticated, UserController.getUserDetails);
 
+userRouter.put(
+  "/update-profile",
+  isAuthenticated,
+  UserController.updateUserDetails
+);
+userRouter.put(
+  "/update-avatar",
+  isAuthenticated,
+  UserController.updateUserAvatar
+);
 export default userRouter;

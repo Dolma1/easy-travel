@@ -1,9 +1,29 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { Home, Layers, Info, LogIn, UserPlus, FileCog } from "lucide-react";
+import {
+  Home,
+  Layers,
+  Info,
+  LogIn,
+  UserPlus,
+  FileCog,
+  UserCircle,
+  Settings,
+  LogOut,
+} from "lucide-react";
 import Menu from "./Menu";
-import { LogoutButton } from "../components";
+import LogoutButton from "@/components/Header/LogoutButton";
+
 import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 const Nav = () => {
   const userdata = useSelector((state) => state.auth.user);
 
@@ -76,15 +96,41 @@ const Nav = () => {
                 </>
               ) : (
                 <div className="flex items-center space-x-4">
-                  <span className="text-gray-600">
-                    Welcome, {userdata.name || "User"}
-                  </span>
-                  <LogoutButton />
-                  <div>
-                    <Link to={"/dashboard"}>
-                      <Button className="bg-zinc-500 text-white">Dashboard</Button>
-                    </Link>
-                  </div>
+                  <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger className="flex items-center space-x-2 focus:outline-none">
+                      <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <UserCircle className="w-6 h-6 text-indigo-600" />
+                      </div>
+                      <span className="text-gray-700">{userdata.name}</span>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end">
+                      <DropdownMenuLabel className="ml-2 text-md shadow-sm">
+                        My Account
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <Link to="/profile">
+                        <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 p-3">
+                          <UserCircle className="mr-2 ml-3" />
+                          <span className="font-medium text-md">Profile</span>
+                        </DropdownMenuItem>
+                      </Link>
+                      <DropdownMenuSeparator />
+
+                      <Link to="/settings">
+                        <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 p-3">
+                          <Settings className="mr-2 ml-2" />
+                          <span className="font-medium text-md">Settings</span>
+                        </DropdownMenuItem>
+                      </Link>
+                      <DropdownMenuSeparator />
+                      <LogoutButton className="bg-no w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/50" />
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <Link to="/dashboard">
+                    <Button className="bg-indigo-600 text-white hover:bg-indigo-700">
+                      Dashboard
+                    </Button>
+                  </Link>
                 </div>
               )}
             </div>

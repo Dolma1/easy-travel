@@ -20,7 +20,7 @@ export const journalApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
-
+    // Gets all the journals of the user
     getJournal: builder.query({
       query: () => ({
         url: `${journal_url}/`,
@@ -36,6 +36,14 @@ export const journalApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
+
+    getSingleJournal: builder.query({
+      query: (id) => ({
+        url: `${journal_url}/${id}`,
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
@@ -44,4 +52,5 @@ export const {
   useUpdateJournalMutation,
   useGetJournalQuery,
   useDeleteJournalMutation,
+  useGetSingleJournalQuery,
 } = journalApiSlice;

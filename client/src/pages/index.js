@@ -1,7 +1,20 @@
-import About from "@/components/About";
 import HomePage from "./HomePage";
+import EditJournalPage from "./EditJournalPage";
+import DashBoardPage from "./DashboardPage";
+import SingleJournalPage from "./SingleJournalPage";
+import Profile from "./ProfilePage";
+import GroupPage from "./GroupPage";
+import SingleGroupPage from "./SingleGroupPage";
+import JournalsPage from "./JournalsPage";
 
-export{
+// import SingleJournalPage from './SingleJournalPage'
+export {
   HomePage,
-  About,
-}
+  EditJournalPage,
+  JournalsPage,
+  DashBoardPage,
+  SingleJournalPage,
+  SingleGroupPage,
+  Profile,
+  GroupPage,
+};

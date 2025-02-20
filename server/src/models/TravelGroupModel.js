@@ -8,11 +8,7 @@ const travelGroupSchema = new mongoose.Schema(
       trim: true,
       maxLength: [50, "Group name cannot exceed 50 characters"],
     },
-    description: {
-      type: String,
-      trim: true,
-      maxLength: [200, "Description cannot exceed 200 characters"],
-    },
+
     creator: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -50,6 +46,7 @@ const travelGroupSchema = new mongoose.Schema(
       type: String,
       default: "NPR",
     },
+
     budget: {
       type: Number,
       default: 0,

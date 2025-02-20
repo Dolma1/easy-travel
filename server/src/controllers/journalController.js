@@ -92,7 +92,6 @@ class JournalController {
   static updateJournal = asyncHandler(async (req, res, next) => {
     try {
       const id = req.params.id;
-      // console.log(id)
       const { title, content, mood, location, tags, isPrivate } =
         req.body;
 
