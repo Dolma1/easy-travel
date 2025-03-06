@@ -4,6 +4,7 @@ const DashboardPage = () => {
     <div className="flex ">
       <SideBar />
       <div className="w-full">
+        {/* <DashboardNav /> */}
         <Dashboard />
       </div>
     </div>

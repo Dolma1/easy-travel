@@ -59,6 +59,14 @@ const travelGroupSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    joinCode: {
+      type: String,
+      default: null, // Initially null
+    },
+    joinCodeExpiresAt: {
+      type: Date,
+      default: null, // Initially null
+    },
   },
   {
     timestamps: true,

@@ -1,6 +1,5 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-// import { SelectContent,  } from "@radix-ui/react-select";
 import {
   Select,
   SelectTrigger,
@@ -18,19 +17,19 @@ export default function GroupFormfield({
   getValues,
   errorMessage,
   setErrorMessage,
+  startDate, // Receive startDate as a prop
 }) {
-  const d = new Date().toISOString().split("T")[0];
+  const defaultMinDate = new Date().toISOString().split("T")[0];
 
   return (
     <div className="grid grid-cols-[1fr_auto] gap-6">
       {/* Left Column */}
       <div className="space-y-4">
-        {/* name Field */}
-
+        {/* Name Field */}
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-center gap-11">
             <Label htmlFor="name" className="text-right">
-              Name{" "}
+              Name
             </Label>
             <div className="flex flex-col w-full">
               <Input
@@ -54,74 +53,73 @@ export default function GroupFormfield({
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <div className="flex flex-row items-center gap-5">
-            <Label htmlFor="title" className="min-w-max">
-              Start Date
-            </Label>
-            <div className="flex flex-col w-full">
-              <Input
-                id="startDate"
-                type="date"
-                placeholder="Give your entry a meaningful name"
-                min={d}
-                {...register("startDate", {
-                  required: "Start Date is required",
-                })}
-                className="col-span-3"
-              />
-
-              {errors.startDate && (
-                <p className="text-sm text-red-500 ">
-                  {errors.startDate.message}
-                </p>
-              )}
-            </div>
+        {/* Start Date Field */}
+        <div className="flex flex-row items-center gap-5">
+          <Label htmlFor="startDate" className="min-w-max">
+            Start Date
+          </Label>
+          <div className="flex flex-col w-full">
+            <Input
+              id="startDate"
+              type="date"
+              min={defaultMinDate}
+              {...register("startDate", {
+                required: "Start Date is required",
+              })}
+              className="col-span-3"
+            />
+            {errors.startDate && (
+              <p className="text-sm text-red-500">{errors.startDate.message}</p>
+            )}
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <div className="flex flex-row items-center gap-6">
-            <Label htmlFor="title" className="min-w-max">
-              End Date
-            </Label>
-            <div className="flex flex-col w-full">
-              <Input
-                id="endDate"
-                type="date"
-                placeholder="Give your entry a meaningful name"
-                min={d}
-                {...register("endDate", {
-                  required: "End Date is required",
-                })}
-                className="col-span-3"
-              />
-              {errors.endDate && (
-                <p className="text-sm text-red-500 ">
-                  {errors.endDate.message}
-                </p>
-              )}
-            </div>
+        {/* End Date Field */}
+        <div className="flex flex-row items-center gap-5">
+          <Label htmlFor="endDate" className="min-w-max">
+            End Date
+          </Label>
+          <div className="flex flex-col w-full">
+            <Input
+              id="endDate"
+              type="date"
+              min={startDate || defaultMinDate} // Set min to startDate or fallback to default
+              {...register("endDate", {
+                required: "End Date is required",
+                validate: (value) => {
+                  const start = getValues("startDate");
+                  if (!start) return true; // No validation if startDate isn't set
+                  return (
+                    new Date(value) >= new Date(start) ||
+                    "End Date must be on or after Start Date"
+                  );
+                },
+              })}
+              className="col-span-3"
+            />
+            {errors.endDate && (
+              <p className="text-sm text-red-500">{errors.endDate.message}</p>
+            )}
           </div>
         </div>
 
+        {/* Destination Field */}
         <div className="flex flex-col gap-1">
           <div className="flex flex-row items-center gap-2">
-            <Label htmlFor="title" className="">
+            <Label htmlFor="destination" className="">
               Destination
             </Label>
             <div className="flex flex-col w-full">
               <Input
                 id="destination"
                 placeholder="Give your destination"
-                min={d}
                 {...register("destination", {
                   required: "Destination is required",
                 })}
                 className="col-span-3"
               />
               {errors.destination && (
-                <p className="text-sm text-red-500 ">
+                <p className="text-sm text-red-500">
                   {errors.destination.message}
                 </p>
               )}
@@ -129,8 +127,9 @@ export default function GroupFormfield({
           </div>
         </div>
 
+        {/* Budget Field */}
         <div className="flex items-center gap-9">
-          <Label htmlFor="amount" className="text-right">
+          <Label htmlFor="budget" className="text-right">
             Budget
           </Label>
           <div className="col-span-3 relative w-full flex">
@@ -174,11 +173,11 @@ export default function GroupFormfield({
         </div>
 
         {/* Error Handling */}
-        {errors.currency && (
+        {errors?.currency && (
           <p className="text-red-500 text-sm">{errors.currency.message}</p>
         )}
 
-        {errors.budget && (
+        {errors?.budget && (
           <p className="text-red-500 text-sm">{errors.budget.message}</p>
         )}
       </div>

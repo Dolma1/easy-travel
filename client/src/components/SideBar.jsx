@@ -40,7 +40,7 @@ const SideBar = () => {
     >
       <div className="flex h-16 items-center justify-between border-b px-4">
         {!isSidebarCollapsed && (
-          <span className="text-lg font-semibold">ExpenseTracker</span>
+          <span className="text-lg font-semibold">Easy Travel</span>
         )}
         <Button
           variant="ghost"

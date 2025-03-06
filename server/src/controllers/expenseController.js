@@ -7,15 +7,8 @@ import cloudinary from "cloudinary";
 
 class ExpenseController {
   static createExpense = asyncHandler(async (req, res, next) => {
-    const {
-      groupId,
-      description,
-      amount,
-      category,
-      splitBetween,
-      currency,
-      receipt,
-    } = req.body;
+    const { groupId, description, amount, category, status, receipt } =
+      req.body;
 
     const paidBy = req.user._id;
     try {
@@ -26,7 +19,7 @@ class ExpenseController {
         !amount ||
         !category ||
         !paidBy ||
-        !currency
+        !status
       ) {
         return next(new ErrorHandler("All fields are required", 400));
       }
@@ -37,26 +30,14 @@ class ExpenseController {
         return next(new ErrorHandler("Group not found", 404));
       }
 
-      // Validate that all users in splitBetween are group members
-      // const memberIds = group.members.map((member) => member.user.toString());
-      // const isValidSplit = splitBetween.every((split) =>
-      //   memberIds.includes(split.user.toString())
-      // );
-      // if (!isValidSplit) {
-      //   return next(
-      //     new ErrorHandler(
-      //       "Some users in splitBetween are not group members",
-      //       400
-      //     )
-      //   );
-      // }
+      // TODO: Handle Split between functionality
 
       // Upload the image to Cloudinary
       let uploadedImage = {
         public_id: "",
         url: "",
       };
-     const  receptImage = receipt[0];
+      const receptImage = receipt[0];
       if (receptImage) {
         const result = await cloudinary.v2.uploader.upload(receptImage, {
           folder: "receipts", // Optional: Save images in a specific folder
@@ -67,24 +48,20 @@ class ExpenseController {
           url: result.secure_url,
         };
       }
-      const finalAmount = {
-        value: amount,
-        currency: currency,
-      };
 
       // Create the expense
       const expense = await Expense.create({
         group: groupId,
         description,
-        amount: finalAmount,
+        amount: amount,
         category,
         paidBy,
-        // splitBetween,
+        status,
         receipt: uploadedImage,
       });
 
       // Update group's total expenses
-      group.totalExpenses += finalAmount.value;
+      group.totalExpenses += amount;
       await group.save();
 
       res.status(201).json({
@@ -204,8 +181,6 @@ class ExpenseController {
       return next(new ErrorHandler(error.message, 500));
     }
   });
-
-
 
   static fetchSingleExpense = asyncHandler(async (req, res, next) => {
     const expenseId = req.params.id;

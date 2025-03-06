@@ -1,4 +1,4 @@
-import { SideBar, AddJournal,JournalList  } from "../components/index";
+import { SideBar, JournalList } from "../components/index";
 
 const JournalsPage = () => {
   return (
@@ -6,7 +6,7 @@ const JournalsPage = () => {
       <div className="flex">
         <SideBar />
         <div className=" w-full ">
-        <JournalList/>
+          <JournalList />
         </div>
       </div>
     </>

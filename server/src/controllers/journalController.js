@@ -81,7 +81,10 @@ class JournalController {
       const user = req.user;
       const allJournals = await Journal.find({ author: user._id });
       if (!allJournals || allJournals.length === 0) {
-        return next(new ErrorHandler("No Journals Found", 404));
+                return res.status(200).json({
+                  success: false,
+                  message: "No Journals Found",
+                });
       }
       return res.status(200).json({ success: true, allJournals });
     } catch (error) {

@@ -21,6 +21,7 @@ router.use("/api/v1/expense", expenseRouter);
 // * ROUTES FOR THE Travel
 router.use("/api/v1/travelGroup", travelRouter);
 // * ROUTES FOR THE SETTLEMENT
+// router.use("/api/v1/settlement");
 
 // * ROUTES FOR THE NOTIFICATION
 

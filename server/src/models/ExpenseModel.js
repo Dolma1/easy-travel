@@ -14,16 +14,9 @@ const expenseSchema = new mongoose.Schema(
       maxLength: [100, "Description cannot exceed 100 characters"],
     },
     amount: {
-      value: {
-        type: Number,
-        required: [true, "Amount is required"],
-        min: [0, "Amount cannot be negative"],
-      },
-      currency: {
-        type: String,
-        required: true,
-        default:'NPR'
-      },
+      type: Number,
+      required: [true, "Amount is required"],
+      min: [0, "Amount cannot be negative"],
     },
     category: {
       type: String,
@@ -38,9 +31,9 @@ const expenseSchema = new mongoose.Schema(
       required: true,
     },
     paidBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
     paymentMethod: {
       type: String,

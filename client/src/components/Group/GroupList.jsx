@@ -1,16 +1,59 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar, User, MapPin, Wallet } from "lucide-react";
 import { useGetGroupQuery } from "@/app/slices/groupApiSlice";
 import { Link } from "react-router-dom";
 import AddGroup from "./AddGroup";
+import { DashboardNav } from "..";
+import { useEffect, useState } from "react";
+import JoinGroup from "./JoinGroup";
 
 function ListGroup() {
   const { data } = useGetGroupQuery();
   const group = Array.isArray(data?.data) ? data.data : [];
   const getData = [...group].reverse();
+  const [SearchData, setSearchData] = useState([]);
+
+  useEffect(() => {
+    if (group.length) {
+      const reversedData = [...group].reverse();
+      setSearchData(reversedData);
+    }
+  }, [group]);
+  if (group.length === 0) {
+    return (
+      <>
+        <DashboardNav
+          SearchData={SearchData}
+          setSearchData={setSearchData}
+          originalData={getData}
+        />
+        <div className="px-8 mt-6">
+          <div className="pb-8 flex justify-between items-center ">
+            <div className="mb-6">
+              <h1 className="text-4xl font-bold"> My Groups</h1>
+              <p className="text-muted-foreground">
+                View and manage your group entries
+              </p>
+            </div>
+            <AddGroup />
+            <JoinGroup />
+          </div>
+        </div>
+        <div className="text-center py-10">
+          <p className="text-xl text-gray-500">You have no Group yet.</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
+      <DashboardNav
+        SearchData={SearchData}
+        setSearchData={setSearchData}
+        originalData={getData}
+      />
       <div className="px-8 mt-6">
         <div className=" flex justify-between items-center">
           <div className="mb-6">
@@ -20,14 +63,15 @@ function ListGroup() {
             </p>
           </div>
           <AddGroup />
+          <JoinGroup />
         </div>
-        <ScrollArea className="h-[calc(100vh-130px)] ">
+        <ScrollArea className="h-[calc(100vh-176px)] ">
           <div className="min-h-screen bg-[#F9FAFB] ">
             {/* Main Content */}
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
               {/* Expense List */}
               <div className="overflow-hidden space-y-4 sm:rounded-md    ">
-                {getData.map((group) => (
+                {SearchData.map((group) => (
                   <div
                     key={group._id}
                     className="transform transition duration-200   bg-white hover:scale-[1.02]"
@@ -82,13 +126,6 @@ function ListGroup() {
                               </span>
                             </div>
                           </div>
-
-                          {/* {expense.notes && (
-                      <div className="mt-4 flex items-start text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-                        <AlertCircle className="flex-shrink-0 mr-2 h-4 w-4 text-gray-400 mt-0.5" />
-                        <p className="line-clamp-2">{expense.notes}</p>
-                      </div>
-                    )} */}
                         </div>
                       </div>
                     </Link>

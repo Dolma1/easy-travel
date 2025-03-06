@@ -9,7 +9,6 @@ import {
   FileCog,
   UserCircle,
   Settings,
-  LogOut,
 } from "lucide-react";
 import Menu from "./Menu";
 import LogoutButton from "@/components/Header/LogoutButton";
@@ -25,6 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Nav = () => {
+  // TODO:: Handle the State update functionality
   const userdata = useSelector((state) => state.auth.user);
 
   return (

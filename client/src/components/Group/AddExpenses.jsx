@@ -1,35 +1,25 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-
 import { PlusCircle } from "lucide-react";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
-
 import { useCreateExpenseMutation } from "@/app/slices/expenseApiSlice";
-import { useGetExpenseQuery } from "@/app/slices/expenseApiSlice";
 import ExpensesFromfield from "../ExpensesFromfield";
-// import { useSelector } from "react-redux";
+import { useGetTravelExpensesQuery } from "@/app/slices/travelGroupApiSlice";
+import { useGetSingleTravelGroupQuery } from "@/app/slices/travelGroupApiSlice";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-export default function AddGroup() {
+export default function AddExpenses() {
   const [open, setOpen] = useState(false);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [createExpense, { isLoading }] = useCreateExpenseMutation();
-  const { refetch } = useGetExpenseQuery();
-  // const authStatus = useSelector((state) => state?.auth?.user?._id);
   const { id } = useParams();
+  const { refetch } = useGetTravelExpensesQuery(id);
+  const { refetch: re } = useGetSingleTravelGroupQuery(id);
+
   const statusOptions = [
     { value: "pending", label: "Pending" },
     { value: "settled", label: "Settled" },
@@ -40,13 +30,14 @@ export default function AddGroup() {
     { value: "cash", label: "Cash" },
     { value: "khalti", label: "Khalti" },
   ];
+
   const categoryOptions = [
     { value: "accommodation", label: "Accommodation" },
     { value: "transport", label: "Transport" },
     { value: "food", label: "Food" },
     { value: "activities", label: "Activities" },
     { value: "shopping", label: "Shopping" },
-    { value: "others", label: "Others" },
+    { value: "other", label: "Others" },
   ];
 
   const {
@@ -68,24 +59,25 @@ export default function AddGroup() {
     try {
       const updatedData = { ...data, groupId: id };
       const res = await createExpense(updatedData).unwrap();
-      console.log("Expense created:", res);
-      location.reload();
-      refetch();
-      reset();
-      toast.success("Expense entry created successfully!");
-      setOpen(false);
-      setImagePreviews([]);
+      if (res.success) {
+        toast.success("Expense entry created successfully!");
+        await re();
+        await refetch();
+      }
     } catch (error) {
       console.error("Error creating Expense:", error);
       toast.error(error?.data?.message || "Failed to create Expense entry");
+    } finally {
+      reset();
+      setOpen(false);
+      setImagePreviews([]);
     }
   };
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files || []);
-
     if (files.length === 0) {
-      setErrorMessage("Please select at least one ");
+      setErrorMessage("Please select at least one image");
       return;
     }
 
@@ -125,59 +117,65 @@ export default function AddGroup() {
       "receipt",
       currentImages.filter((_, i) => i !== index)
     );
-
     if (imagePreviews.length === 1) {
       setErrorMessage("Please upload at least one image.");
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button className="fixed bottom-6 right-6 w-14 h-14 bg-[#FE9935] text-white rounded-full shadow-lg hover:bg-[#FE9935]/40 transition-colors flex items-center justify-center  ">
-          <PlusCircle className="w-6 h-6 hover:animate-spin" />
-        </button>
-      </DialogTrigger>
-      <DialogContent className="max-w-[70vw] overflow-y-auto h-[470px]">
-        <DialogHeader>
-          <DialogTitle>Add New Expenses Entry</DialogTitle>
-          <p>Fill in the details below</p>
-          <hr />
-          <DialogDescription></DialogDescription>
-        </DialogHeader>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6"
-          encType="multipart/form-data"
+    <div className="relative">
+      {/* Toggle Button */}
+      {!open && (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="fixed bottom-6 right-6 w-14 h-14 bg-[#FE9935] text-white rounded-full  hover:bg-[#FE9935]/90 hover:shadow-2xl transition-colors flex items-center justify-center"
         >
-          <ExpensesFromfield
-            control={control}
-            register={register}
-            errors={errors}
-            setValue={setValue}
-            getValues={getValues}
-            imagePreviews={imagePreviews}
-            setImagePreviews={setImagePreviews}
-            errorMessage={errorMessage}
-            setErrorMessage={setErrorMessage}
-            handleImageChange={handleImageChange}
-            removeImage={removeImage}
-            statusOptions={statusOptions}
-            paymentOptions={paymentOptions}
-            categoryOptions={categoryOptions}
-          />
+          <PlusCircle className="w-6 h-6 hover:animate-spin hover:sha" />
+        </button>
+      )}
 
-          <DialogFooter>
-            <Button
-              type="submit"
-              className="w-full sm:w-auto"
-              disabled={isLoading}
+      {/* Form Content */}
+      {open && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-[70vw] overflow-y-auto h-[470px] p-6">
+            <div className="mb-4">
+              <h2 className="text-xl font-bold">Add New Expense Entry</h2>
+              <p>Fill in the details below</p>
+              <hr className="my-2" />
+            </div>
+
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-6"
+              encType="multipart/form-data"
             >
-              {isLoading ? "Creating..." : "Create Expenses"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+              <ExpensesFromfield
+                control={control}
+                register={register}
+                errors={errors}
+                setValue={setValue}
+                getValues={getValues}
+                imagePreviews={imagePreviews}
+                setImagePreviews={setImagePreviews}
+                errorMessage={errorMessage}
+                setErrorMessage={setErrorMessage}
+                handleImageChange={handleImageChange}
+                removeImage={removeImage}
+                statusOptions={statusOptions}
+                paymentOptions={paymentOptions}
+                categoryOptions={categoryOptions}
+              />
+
+              <div className="flex justify-end gap-4">
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading ? "Creating..." : "Create Expense"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

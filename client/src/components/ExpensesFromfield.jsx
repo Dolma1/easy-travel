@@ -10,18 +10,13 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ImageIcon, X } from "lucide-react";
-import { Card } from "./ui/card";
 
 export default function ExpensesFromfield({
   control,
   register,
   errors,
-  setValue,
-  getValues,
   imagePreviews,
-  setImagePreviews,
   errorMessage,
-  setErrorMessage,
   handleImageChange,
   removeImage,
   statusOptions,
@@ -50,7 +45,7 @@ export default function ExpensesFromfield({
               },
             })}
           />
-          {errors.description && (
+          {errors?.description && (
             <p className="text-sm text-red-500">{errors.description.message}</p>
           )}
         </div>
@@ -63,9 +58,12 @@ export default function ExpensesFromfield({
             <Controller
               name="status"
               control={control}
-              rules={{ required: "Status is required" }}
+              rules={{ required: "Please select a status" }}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || ""}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -90,7 +88,7 @@ export default function ExpensesFromfield({
             <Controller
               name="payment"
               control={control}
-              rules={{ required: "Payment is required" }}
+              rules={{ required: "Payment method is required" }}
               render={({ field }) => (
                 <Select onValueChange={field.onChange} value={field.value}>
                   <SelectTrigger>
@@ -117,9 +115,12 @@ export default function ExpensesFromfield({
             <Controller
               name="category"
               control={control}
-              rules={{ required: "Category is required" }}
+              rules={{ required: "Please select a category" }}
               render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || ""}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
@@ -145,24 +146,7 @@ export default function ExpensesFromfield({
             Amount
           </Label>
           <div className="flex gap-2">
-            <Controller
-              name="currency"
-              control={control}
-              defaultValue="NPR"
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-[100px]">
-                    <SelectValue placeholder="Currency" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="NPR">NPR</SelectItem>
-                    <SelectItem value="USD">USD</SelectItem>
-                    <SelectItem value="EUR">EUR</SelectItem>
-                    <SelectItem value="INR">INR</SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
+
             <Input
               type="number"
               id="amount"

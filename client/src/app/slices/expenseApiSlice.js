@@ -52,5 +52,5 @@ export const {
   useUpdateExpenseMutation,
   useGetExpenseQuery,
   useDeleteJournalMutation,
-  useGetSingleJournalQuery,
+  useGetSingleExpenseQuery
 } = expenseApiSlice;

@@ -35,21 +35,23 @@ export const userApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
-    // createJournal: builder.mutation({
-    //   query: (data) => ({
-    //     url: `${journal_url}/create-journal`,
-    //     method: "POST",
-    //     body: data,
-    //     credentials: "include",
-    //   }),
-    // }),
-    // getAllJournal: builder.query({
-    //   query: () => ({
-    //     url: `${journal_url}/get-journal`,
-    //     method: "GET",
-    //     credentials: "include",
-    //   }),
-    // }),
+
+    getUserProfile: builder.query({
+      query: () => ({
+        url: `${user_url}/profile`,
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
+
+    updateUserProfile: builder.mutation({
+      query: (data) => ({
+        url: `${user_url}/update-profile`,
+        method: "PUT",
+        body: data,
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
@@ -58,6 +60,6 @@ export const {
   useRegisterMutation,
   useActivateMutation,
   useLogoutMutation,
-  // useCreateJournalMutation,
-  // useGetAllJournalQuery,
+  useGetUserProfileQuery,
+  useUpdateUserProfileMutation,
 } = userApiSlice;

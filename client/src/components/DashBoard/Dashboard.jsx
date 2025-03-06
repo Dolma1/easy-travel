@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "../ui/scroll-area"; // Ensure this is correctly imported
+import { DashboardNav } from "../index";
 
 function Dashboard() {
   const [monthlyBudget] = useState(5000);
@@ -71,8 +72,16 @@ function Dashboard() {
     { category: "Others", amount: 500, percentage: 16 },
   ];
 
+ 
+  const [SearchData, setSearchData] = useState(recentTransactions);
+
   return (
     <div className="flex-1 overflow-auto">
+      <DashboardNav
+        SearchData={SearchData}
+        setSearchData={setSearchData}
+        originalData={recentTransactions}
+      />
       <div className="py-5 px-8">
         <div className="mx-auto max-w-7xl space-y-8">
           <div className="flex items-center justify-between">
@@ -166,11 +175,11 @@ function Dashboard() {
               <h2 className="text-xl font-semibold mb-4">
                 Recent Transactions
               </h2>
-              <ScrollArea className="h-[39vh]">
+              <ScrollArea className="h-[33vh]">
                 {" "}
                 {/* Set a fixed height for scrolling */}
                 <div className="space-y-4">
-                  {recentTransactions.map((transaction) => (
+                  {SearchData.map((transaction) => (
                     <div
                       key={transaction.id}
                       className="flex items-center justify-between border-b pb-4 last:border-0 last:pb-0"
@@ -219,7 +228,7 @@ function Dashboard() {
               <h2 className="text-xl font-semibold mb-4">
                 Spending by Category
               </h2>
-              <ScrollArea className="h-[39vh]">
+              <ScrollArea className="h-[33vh]">
                 {" "}
                 {/* Set a fixed height for scrolling */}
                 <div className="space-y-4">

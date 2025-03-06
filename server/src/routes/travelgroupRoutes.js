@@ -31,4 +31,23 @@ travelGroupRouter.get(
   isAuthenticated,
   TravelGroupController.fetchGroupExpenses
 );
+
+travelGroupRouter.post(
+  "/invite-code/:id",
+  isAuthenticated,
+  TravelGroupController.getGroupInvitationCode
+);
+
+travelGroupRouter.post(
+  "/verify-code",
+  isAuthenticated,
+  TravelGroupController.verifyJoinGroupCode
+);
+
+travelGroupRouter.post(
+  "/join",
+  isAuthenticated,
+  TravelGroupController.joinGroup
+);
+
 export default travelGroupRouter;
