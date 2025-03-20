@@ -9,17 +9,19 @@ import { useEffect, useState } from "react";
 import JoinGroup from "./JoinGroup";
 
 function ListGroup() {
-  const { data } = useGetGroupQuery();
+  const { data, refetch } = useGetGroupQuery();
   const group = Array.isArray(data?.data) ? data.data : [];
   const getData = [...group].reverse();
   const [SearchData, setSearchData] = useState([]);
 
   useEffect(() => {
+    refetch();
     if (group.length) {
       const reversedData = [...group].reverse();
       setSearchData(reversedData);
     }
   }, [group]);
+
   if (group.length === 0) {
     return (
       <>
@@ -31,13 +33,13 @@ function ListGroup() {
         <div className="px-8 mt-6">
           <div className="pb-8 flex justify-between items-center ">
             <div className="mb-6">
-              <h1 className="text-4xl font-bold"> My Groups</h1>
+              <h1 className="text-4xl font-bold">My Groups</h1>
               <p className="text-muted-foreground">
                 View and manage your group entries
               </p>
             </div>
             <AddGroup />
-            <JoinGroup />
+            <JoinGroup refetch={refetch} />
           </div>
         </div>
         <div className="text-center py-10">
@@ -55,26 +57,28 @@ function ListGroup() {
         originalData={getData}
       />
       <div className="px-8 mt-6">
-        <div className=" flex justify-between items-center">
+        <div className="flex justify-between items-center">
           <div className="mb-6">
             <h1 className="text-4xl font-bold">My Groups</h1>
             <p className="text-muted-foreground">
               View and manage your group entries
             </p>
           </div>
-          <AddGroup />
-          <JoinGroup />
+          <div className="flex gap-4 items-center -mt-5 ">
+            <AddGroup />
+            <JoinGroup />
+          </div>
         </div>
-        <ScrollArea className="h-[calc(100vh-176px)] ">
-          <div className="min-h-screen bg-[#F9FAFB] ">
+        <ScrollArea className="h-[calc(100vh-176px)]">
+          <div className="min-h-screen bg-[#F9FAFB]">
             {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
-              {/* Expense List */}
-              <div className="overflow-hidden space-y-4 sm:rounded-md    ">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+              {/* Group List */}
+              <div className="overflow-hidden space-y-4 sm:rounded-md">
                 {SearchData.map((group) => (
                   <div
                     key={group._id}
-                    className="transform transition duration-200   bg-white hover:scale-[1.02]"
+                    className="transform transition duration-200 bg-white hover:scale-[1.02]"
                   >
                     <Link
                       to={`/groups/${group._id}`}
@@ -106,24 +110,26 @@ function ListGroup() {
                             </div>
                           </div>
 
-                          <div className="mt-4 flex flex-wrap items-center gap-4">
-                            <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full">
-                              <Calendar className="flex-shrink-0 mr-1.5 h-4 w-4 text-green-500" />
-                              <span>
-                                From:{" "}
-                                {new Date(
-                                  group.trip.startDate
-                                ).toLocaleDateString()}
-                              </span>
-                            </div>
-                            <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full">
-                              <Calendar className="flex-shrink-0 mr-1.5 h-4 w-4 text-amber-500" />
-                              <span>
-                                To:{" "}
-                                {new Date(
-                                  group.trip.endDate
-                                ).toLocaleDateString()}
-                              </span>
+                          <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex gap-4">
+                              <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full">
+                                <Calendar className="flex-shrink-0 mr-1.5 h-4 w-4 text-green-500" />
+                                <span>
+                                  From:{" "}
+                                  {new Date(
+                                    group.trip.startDate
+                                  ).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <div className="flex items-center text-sm text-gray-600 bg-gray-50 px-3 py-1.5 rounded-full">
+                                <Calendar className="flex-shrink-0 mr-1.5 h-4 w-4 text-amber-500" />
+                                <span>
+                                  To:{" "}
+                                  {new Date(
+                                    group.trip.endDate
+                                  ).toLocaleDateString()}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>

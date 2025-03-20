@@ -9,7 +9,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, X } from "lucide-react";
+import {
+  ImageIcon,
+  X,
+  Users,
+  SplitSquareVertical as SplitSquare,
+  User,
+} from "lucide-react";
+
+import { useSelector } from "react-redux";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
+import { Card, CardContent } from "./ui/card";
 
 export default function ExpensesFromfield({
   control,
@@ -23,7 +35,16 @@ export default function ExpensesFromfield({
   existingImages,
   paymentOptions,
   categoryOptions,
+  groupMembers = [],
 }) {
+  const userdata = useSelector((state) => state.auth?.user);
+  const paidBy = userdata?._id;
+
+  const filteredGroupMembers = groupMembers.filter(
+    (member) => member.user._id !== paidBy
+  );
+
+  const [splitType, setSplitType] = useState("equal");
   return (
     <div className="grid grid-cols-[2fr_1fr] gap-8">
       {/* Left Column - Form Fields */}
@@ -49,7 +70,6 @@ export default function ExpensesFromfield({
             <p className="text-sm text-red-500">{errors.description.message}</p>
           )}
         </div>
-
         {/* Status, Payment, Category Row */}
         <div className="grid grid-cols-3 gap-4">
           {/* Status Field */}
@@ -139,14 +159,12 @@ export default function ExpensesFromfield({
             )}
           </div>
         </div>
-
         {/* Amount Field */}
         <div className="space-y-2">
           <Label htmlFor="amount" className="text-sm font-medium">
             Amount
           </Label>
           <div className="flex gap-2">
-
             <Input
               type="number"
               id="amount"
@@ -161,6 +179,93 @@ export default function ExpensesFromfield({
           </div>
           {errors.amount && (
             <p className="text-sm text-red-500">{errors.amount.message}</p>
+          )}
+        </div>
+        {/* Paid By Section */}
+        <Card className="w-full max-w-md shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-gray-100 p-2 rounded-full">
+                <User className="h-5 w-5 text-gray-500" />
+              </div>
+              <div>
+                <Label className="text-xs text-gray-500">Paid by</Label>
+                <p className="font-medium">{userdata?.name}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Split Options */}
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2">
+            <SplitSquare className="h-5 w-5 text-primary" />
+            <Label>Split Options</Label>
+          </div>
+
+          <RadioGroup
+            value={splitType}
+            onValueChange={setSplitType}
+            className={"grid grid-cols-2 gap-4"}
+          >
+            <Label
+              htmlFor="equal"
+              className={`${
+                splitType === "equal" ? "bg-gray-200" : ""
+              } flex flex-col items-center border-2 p-4 cursor-pointer`}
+            >
+              <RadioGroupItem value="equal" id="equal" className="sr-only" />
+              <Users className="mb-2 h-6 w-6" />
+              <span>Select Everyone</span>
+            </Label>
+
+            <Label
+              htmlFor="custom"
+              className={`${
+                splitType === "custom" ? "bg-gray-200" : ""
+              } flex flex-col items-center border-2 p-4 cursor-pointer`}
+            >
+              <RadioGroupItem value="custom" id="custom" className="sr-only" />
+              <SplitSquare className="mb-2 h-6 w-6" />
+              <span>Custom Split</span>
+            </Label>
+          </RadioGroup>
+
+          {splitType === "custom" && (
+            <>
+              <p>Choose</p>
+              <Controller
+                name="splitMembers"
+                control={control}
+                defaultValue={[]}
+                render={({ field }) => (
+                  <div className="space-y-2">
+                    {filteredGroupMembers.map((member) => (
+                      <div
+                        key={member.id}
+                        className="flex items-center space-x-2"
+                      >
+                        <Checkbox
+                          id={member.user._id}
+                          checked={field.value.includes(member.user._id)}
+                          onCheckedChange={(checked) => {
+                            const newValue = checked
+                              ? [...field.value, member.user._id]
+                              : field.value.filter(
+                                  (id) => id !== member.user._id
+                                );
+                            field.onChange(newValue);
+                          }}
+                        />
+                        <Label htmlFor={member.user._id}>
+                          {member.user.name}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              />
+            </>
           )}
         </div>
       </div>

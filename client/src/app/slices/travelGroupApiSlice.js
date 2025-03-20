@@ -12,6 +12,7 @@ export const travelGroupApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    
     updateJournal: builder.mutation({
       query: (data) => ({
         url: `${travelGroup_url}/${data._id}`,

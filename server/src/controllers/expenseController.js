@@ -7,10 +7,17 @@ import cloudinary from "cloudinary";
 
 class ExpenseController {
   static createExpense = asyncHandler(async (req, res, next) => {
-    const { groupId, description, amount, category, status, receipt } =
-      req.body;
-
+    const {
+      groupId,
+      description,
+      amount,
+      category,
+      status,
+      receipt,
+      splitAmong,
+    } = req.body;
     const paidBy = req.user._id;
+
     try {
       // Validate required fields
       if (
@@ -25,39 +32,72 @@ class ExpenseController {
       }
 
       // Find the group
-      const group = await TravelGroup.findById(groupId);
+      const group = await TravelGroup.findById(groupId).populate("members");
       if (!group) {
         return next(new ErrorHandler("Group not found", 404));
       }
 
-      // TODO: Handle Split between functionality
+      // Validate splitAmong users
+      let usersToSplit =
+        splitAmong && splitAmong.length > 0
+          ? splitAmong
+          : group.members
+              .map((member) => member._id.toString())
+              .filter((id) => id !== paidBy.toString());
 
-      // Upload the image to Cloudinary
-      let uploadedImage = {
-        public_id: "",
-        url: "",
-      };
-      const receptImage = receipt[0];
-      if (receptImage) {
-        const result = await cloudinary.v2.uploader.upload(receptImage, {
-          folder: "receipts", // Optional: Save images in a specific folder
-          resource_type: "auto", // Automatically detect the file type
+      if (usersToSplit.length === 0) {
+        return next(
+          new ErrorHandler(
+            "At least one person must be selected to split the expense",
+            400
+          )
+        );
+      }
+
+      // Check if all selected users are in the group
+      const groupMemberIds = group.members.map((member) =>
+        member._id.toString()
+      );
+      const invalidUsers = usersToSplit.filter(
+        (userId) => !groupMemberIds.includes(userId)
+      );
+
+      if (invalidUsers.length > 0) {
+        return next(
+          new ErrorHandler(
+            "One or more selected users are not in the group",
+            400
+          )
+        );
+      }
+
+      // Calculate equal split share
+      const shareAmount = (amount / usersToSplit.length).toFixed(2);
+      const splitDetails = usersToSplit.map((userId) => ({
+        user: userId,
+        share: shareAmount,
+      }));
+
+      // Upload receipt to Cloudinary if provided
+      let uploadedImage = { public_id: "", url: "" };
+      if (receipt && receipt.length > 0) {
+        const result = await cloudinary.v2.uploader.upload(receipt[0], {
+          folder: "receipts",
+          resource_type: "auto",
         });
-        uploadedImage = {
-          public_id: result.public_id,
-          url: result.secure_url,
-        };
+        uploadedImage = { public_id: result.public_id, url: result.secure_url };
       }
 
       // Create the expense
       const expense = await Expense.create({
         group: groupId,
         description,
-        amount: amount,
+        amount,
         category,
         paidBy,
         status,
         receipt: uploadedImage,
+        splitBetween: splitDetails,
       });
 
       // Update group's total expenses

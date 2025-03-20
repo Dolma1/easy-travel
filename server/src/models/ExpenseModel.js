@@ -38,6 +38,7 @@ const expenseSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       enum: ["cash", "khalti", "other"],
+      default: "cash",
     },
     splitBetween: [
       {

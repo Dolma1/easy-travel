@@ -60,9 +60,45 @@ class TravelGroupController {
   });
   static deleteGroup = asyncHandler(async (req, res, next) => {});
 
-  /* TOGGLE MEMBERS FUNCTIONALITY */
+  // Group Management
   static addOrRemoveMembers = asyncHandler(async (req, res, next) => {
     try {
+      const { userId } = req.body;
+      const groupId = req.params.id;
+      // Find the group by ID
+      const group = await TravelGroup.findById(groupId);
+      if (!group) {
+        return next(new ErrorHandler("No Group found", 400));
+      }
+
+      // Check if the user is already a member
+      const isMember = group.members.some(
+        (member) => member.user.toString() === userId.toString()
+      );
+
+      if (isMember) {
+        // If the user is a member, remove them
+        group.members = group.members.filter(
+          (member) => member.user.toString() !== userId
+        );
+      } else {
+        // If the user is not a member, add them with a default role
+        group.members.push({
+          user: userId,
+          role: "member", // Default role
+          joinedAt: Date.now(),
+        });
+      }
+
+      // Save the updated group
+      await group.save();
+
+      // Return the updated group
+      res.status(200).json({
+        success: true,
+        message: isMember ? "User removed from group" : "User added to group",
+        group,
+      });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
@@ -105,8 +141,8 @@ class TravelGroupController {
     try {
       // Find the group by ID
       const group = await TravelGroup.findById(id)
-        .populate("creator", "name email") // Populate creator details
-        .populate("members.user", "name email"); // Populate member details
+        .populate("creator", "name email avatar") // Populate creator details
+        .populate("members.user", "name email avatar"); // Populate member details
 
       // If the group doesn't exist, return a 404 error
       if (!group) {
@@ -135,6 +171,8 @@ class TravelGroupController {
       return next(new ErrorHandler(error.message, 500));
     }
   });
+
+  // Join Group Functionality
 
   static getGroupInvitationCode = asyncHandler(async (req, res, next) => {
     try {
@@ -173,12 +211,13 @@ class TravelGroupController {
     }
   });
 
-  // Join Group Functionality
   static verifyJoinGroupCode = asyncHandler(async (req, res, next) => {
     try {
       const { joinCode } = req.body;
       // Find group with this join code
-      const group = await TravelGroup.findOne({ joinCode });
+      const group = await TravelGroup.findOne({ joinCode })
+        .populate("creator", "name email avatar")
+        .populate("members.user", "name email avatar");
       if (!group) {
         return next(new ErrorHandler("Invalid or Expired Join code", 404));
       }
@@ -189,9 +228,10 @@ class TravelGroupController {
         return next(new ErrorHandler("Invalid or Expired Join Code", 400));
       }
       // check if  the user is already a member of the group
-      const isMember = group.members.some(
-        (member) => member.user.toString() === req.user._id.toString()
-      );
+      const isMember = group.members.some((member) => {
+       return member.user._id.toString() === req.user._id.toString();
+      });
+      console.log(isMember)
       if (isMember) {
         return res.status(200).json({
           success: true,
@@ -213,7 +253,6 @@ class TravelGroupController {
   });
 
   static joinGroup = asyncHandler(async (req, res, next) => {
-    console.log(req.body);
     try {
       const user = await User.findById(req.user._id);
 
@@ -222,6 +261,7 @@ class TravelGroupController {
       }
 
       const { groupId } = req.body;
+      console.log(groupId)
       const group = await TravelGroup.findById(groupId);
       const isMember = await TravelGroup.findOne({
         _id: groupId,
@@ -261,6 +301,7 @@ class TravelGroupController {
     }
   });
 
+  // Group Expenses
   static fetchGroupExpenses = asyncHandler(async (req, res, next) => {
     const groupid = req.params.id;
 
