@@ -65,6 +65,7 @@ class TravelGroupController {
     try {
       const { userId } = req.body;
       const groupId = req.params.id;
+      console.log(userId, groupId);
       // Find the group by ID
       const group = await TravelGroup.findById(groupId);
       if (!group) {
@@ -229,9 +230,9 @@ class TravelGroupController {
       }
       // check if  the user is already a member of the group
       const isMember = group.members.some((member) => {
-       return member.user._id.toString() === req.user._id.toString();
+        return member.user._id.toString() === req.user._id.toString();
       });
-      console.log(isMember)
+      console.log(isMember);
       if (isMember) {
         return res.status(200).json({
           success: true,
@@ -261,7 +262,7 @@ class TravelGroupController {
       }
 
       const { groupId } = req.body;
-      console.log(groupId)
+      console.log(groupId);
       const group = await TravelGroup.findById(groupId);
       const isMember = await TravelGroup.findOne({
         _id: groupId,

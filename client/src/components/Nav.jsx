@@ -24,13 +24,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Nav = () => {
-  // TODO:: Handle the State update functionality
   const userdata = useSelector((state) => state.auth.user);
 
   return (
     <nav className="fixed w-full top-0 z-50 ">
       <div className="bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="h-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="h-20  px-4 md:px-10 lg:px-20">
           <div className="h-full flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center">
@@ -40,7 +39,7 @@ const Nav = () => {
               >
                 <Layers className="h-8 w-8" />
                 <span className="font-bold text-xl hidden sm:block">
-                  EXPENSE TRACKER
+                  Easy Travel
                 </span>
               </Link>
             </div>
@@ -53,19 +52,19 @@ const Nav = () => {
             {/* Desktop navigation */}
             <div className="hidden md:flex md:items-center md:space-x-8">
               <Link
-                to="/"
+                to=""
                 className="flex items-center space-x-1 text-gray-600 hover:text-indigo-600 font-medium transition-colors"
               >
                 <Home className="h-4 w-4" />
                 <span>Home</span>
               </Link>
-              <Link
-                to="/about"
+              <a
+                href="#about"
                 className="flex items-center space-x-1 text-gray-600 hover:text-indigo-600 font-medium transition-colors"
               >
                 <Info className="h-4 w-4" />
                 <span>About</span>
-              </Link>
+              </a>
               <Link
                 to="/contact"
                 className="flex items-center space-x-1 text-gray-600 hover:text-indigo-600 font-medium transition-colors"

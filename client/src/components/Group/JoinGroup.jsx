@@ -13,15 +13,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import {
-  ArrowBigLeft,
-
-  Crown,
-  Key,
-  MapPin,
-  Users,
-  Users2,
-} from "lucide-react";
+import { ArrowBigLeft, Crown, Key, MapPin, Users, Users2 } from "lucide-react";
 import {
   useJoinGroupMutation,
   useVerifyCodeMutation,

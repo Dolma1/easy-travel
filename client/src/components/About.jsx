@@ -11,7 +11,7 @@ const About = () => {
           About
         </h1>
         <p className="mt-4 text-center text-xl text-gray-500 mb-20">
-          This expense tracker application is dedicated in helping you manage
+          This easy travel application is dedicated in helping you manage
           your financial life.
         </p>
 
@@ -26,7 +26,7 @@ const About = () => {
             </div>
             <p className="text-lg text-gray-600 ">
               If you're searching for a complex money management app that tries
-              to do it all, this isn't it. This expense tracker is simple,
+              to do it all, this isn't it. This easy travel is simple,
               intuitive, and easy to use. It helps you track expenses, manage
               budgets, and organize your spending so you can save money and take
               control of your finances—without any hassle.

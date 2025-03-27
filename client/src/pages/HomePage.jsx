@@ -14,16 +14,16 @@ const HomePage = () => {
   return (
     <>
       <Header />
-      <section>
+      <section id="top">
         <Top />
       </section>
-      <section className="bg-[#EEEEEE]">
+      <section className="bg-[#EEEEEE]" id="features">
         <Features />
       </section>
       <section className="bg-[#5f5e5e]">
         <BentoBox />
       </section>
-      <section className="">
+      <section id="about">
         <About />
       </section>
       <section className="bg-[#EEEEEE] ">

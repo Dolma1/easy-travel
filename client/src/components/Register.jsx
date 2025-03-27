@@ -35,7 +35,6 @@ const Register = () => {
       });
       toast.success("Please check your email");
     } catch (error) {
-      console.error(error);
       toast.error(error.message || "Registration failed");
     }
   };

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settlement Reminder - Easy Travel</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f9ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .email-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            width: 90%;
+            max-width: 550px;
+        }
+        h1 {
+            color: #2c3e50;
+            background-color: #e8f4fd;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        .amount {
+            font-size: 42px;
+            color: #3498db;
+            margin: 25px 0;
+            font-weight: bold;
+        }
+        p {
+            color: #555;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+        .info {
+            color: #7f8c8d;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        .btn {
+            display: inline-block;
+            padding: 14px 30px;
+            background-color: #3498db;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin: 15px 0;
+        }
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #95a5a6;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 20px;
+        }
+        .handshake-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background-color: #fffde7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <svg class="handshake-icon" viewBox="0 0 24 24" fill="#3498db">
+            <path d="M11 6H16L19 10H22V12H20.46L18.76 15.33L21 17.67V21H17L13.58 15.63L11 14.37V20H7V12H5V10H8L11 6M6 12V20H2V12H6M5 10H4C2.9 10 2 10.9 2 12V20C2 21.11 2.9 22 4 22H6V16H5V10M20.41 8.41L17 5H12V7H15.59L18.59 10H22V8.41H20.41M16 12H9V14H16V12M22 16V14H20V16H22M10 20V15.41L7.41 18.59C7.22 18.41 7 18.31 6.8 18.23L6 20H10Z" />
+        </svg>
+
+        <h1> Settlement Request</h1>
+        <p>Hello <%= debtorName %>,</p>
+        
+        <div class="highlight">
+            <p><strong><%= payerName %></strong> has kindly requested you to settle your share of an expense:</p>
+            <p class="amount"><%= currency %> <%= amount %></p>
+            <p class="info">For: <em>"<%= expenseDescription %>"</em></p>
+        </div>
+
+        <p>This is just a gentle reminder about the expense you shared in <strong><%= groupName %></strong>.</p>
+        <p>We believe in keeping things fair and square among friends, and we know you do too!</p>
+        
+        <a href="#" class="btn">View Expense Details</a>
+        
+        <p>You can settle this directly with <%= payerName %>, or through our app if you prefer.</p>
+        
+        <div class="footer">
+            <p>Thank you for helping keep the group finances clear!</p>
+            <p>Warm regards,</p>
+            <p>The <strong>Easy Travel</strong> Team</p>
+            <p><small>If you believe this is a mistake, please reply to this email.</small></p>
+        </div>
+    </div>
+</body>
+</html>

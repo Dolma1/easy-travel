@@ -20,7 +20,7 @@ export const expenseApiSlice = apiSlice.injectEndpoints({
     //     credentials: "include",
     //   }),
     // }),
-    // Gets all the expenses of the user
+    // Gets all the expenses of the +
     getExpense: builder.query({
       query: () => ({
         url: `${expense_url}/`,
@@ -38,8 +38,8 @@ export const expenseApiSlice = apiSlice.injectEndpoints({
     // }),
 
     getSingleExpense: builder.query({
-      query: (expenseId) => ({
-        url: `${expense_url}/${expenseId}`,
+      query: (id) => ({
+        url: `${expense_url}/${id}`,
         method: "GET",
         credentials: "include",
       }),
@@ -60,31 +60,14 @@ export const expenseApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
-    expenseSettlement: builder.mutation({
-      query: (data) => ({
-        url: `${expense_url}/settle-expense/${data.expenseId}`,
-        method: "PUT",
-        body: data,
-        credentials: "include",
-      }),
-    }),
-    disputeExpense: builder.mutation({
-      query: (data) => ({
-        url: `${expense_url}/dispute-expense/${data.expenseId}`,
-        method: "PUT",
-        body: data,
-        credentials: "include",
-      }),
-    }),
   }),
 });
 
 export const {
   useCreateExpenseMutation,
-  useExpenseSettlementMutation,
+  useUpdateExpenseMutation,
   useGetExpenseQuery,
   useGetExpenseSummaryQuery,
   useGetSingleExpenseQuery,
   useRequestMoneyMutation,
-  useDisputeExpenseMutation
 } = expenseApiSlice;

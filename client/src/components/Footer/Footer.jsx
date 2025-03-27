@@ -15,15 +15,15 @@ const Footer = () => {
       <div className="flex flex-wrap gap-8 justify-between">
         {/* Logo and About Section */}
         <div className="flex-1">
-        <Link
-                to="/"
-                className="flex items-center space-x-2 text-[#586BAF] hover:text-indigo-500 transition-colors"
-              >
-                <Layers className="h-8 w-8" />
-                <span className="font-bold text-xl hidden sm:block">
-                  EXPENSE TRACKER
-                </span>
-              </Link>
+          <Link
+            to="/"
+            className="flex items-center space-x-2 text-[#586BAF] hover:text-indigo-500 transition-colors"
+          >
+            <Layers className="h-8 w-8" />
+            <span className="font-bold text-xl hidden sm:block">
+              Easy Travel
+            </span>
+          </Link>
           <p className="mt-2 text-sm">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Your footer
             description goes here.
@@ -134,9 +134,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-600">
-        <p>
-          © {new Date().getFullYear()} EXPENSE TRACKER. All rights reserved.
-        </p>
+        <p>© {new Date().getFullYear()}Easy Travel. All rights reserved.</p>
       </div>
     </footer>
   );

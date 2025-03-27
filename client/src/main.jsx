@@ -1,11 +1,17 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import './index.css';
-import App from './App.jsx';
-import store from './app/store';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { Login, Register, Activate, PageNotFound } from './components';
-import { Provider } from 'react-redux';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.jsx";
+import store from "./app/store";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  Login,
+  Register,
+  Activate,
+  PageNotFound,
+  Settlement,
+} from "./components";
+import { Provider } from "react-redux";
 
 import {
   HomePage,
@@ -16,21 +22,21 @@ import {
   GroupPage,
   JournalsPage,
   SingleGroupPage,
-} from './pages';
-import AuthLayout from './routes/AuthLayout';
+} from "./pages";
+import AuthLayout from "./routes/AuthLayout";
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <App />,
     children: [
       {
-        path: '/',
+        path: "/",
         element: <HomePage />,
       },
 
       {
-        path: '/login',
+        path: "/login",
         element: (
           <AuthLayout authentication={false}>
             <Login />
@@ -39,7 +45,7 @@ const router = createBrowserRouter([
       },
 
       {
-        path: '/activate',
+        path: "/activate",
         element: (
           <AuthLayout authentication={false}>
             <Activate />
@@ -47,7 +53,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/register',
+        path: "/register",
         element: (
           <AuthLayout authentication={false}>
             <Register />
@@ -56,7 +62,7 @@ const router = createBrowserRouter([
       },
 
       {
-        path: '/profile',
+        path: "/profile",
         element: (
           <AuthLayout authentication={true}>
             <Profile />
@@ -64,7 +70,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/dashboard',
+        path: "/dashboard",
         element: (
           <AuthLayout authentication={true}>
             <DashBoardPage />
@@ -73,7 +79,7 @@ const router = createBrowserRouter([
       },
 
       {
-        path: '/groups',
+        path: "/groups",
         element: (
           <AuthLayout authentication={true}>
             <GroupPage />
@@ -81,16 +87,24 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/groups/:id',
+        path: "/groups/:id",
         element: (
           <AuthLayout authentication={true}>
             <SingleGroupPage />
           </AuthLayout>
         ),
       },
+      {
+        path: "/groups/settlement/:expenseId",
+        element: (
+          <AuthLayout authentication={true}>
+            <Settlement />
+          </AuthLayout>
+        ),
+      },
 
       {
-        path: '/journal',
+        path: "/journal",
         element: (
           <AuthLayout authentication={true}>
             <JournalsPage />
@@ -99,7 +113,7 @@ const router = createBrowserRouter([
       },
 
       {
-        path: '/journal/:id',
+        path: "/journal/:id",
         element: (
           <AuthLayout authentication={true}>
             <SingleJournalPage />
@@ -107,7 +121,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '/journal/edit/:id',
+        path: "/journal/edit/:id",
         element: (
           <AuthLayout authentication={true}>
             <EditJournalPage />
@@ -115,13 +129,13 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: '*',
+        path: "*",
         element: <PageNotFound />,
-      }
+      },
     ],
   },
 ]);
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <RouterProvider router={router} />

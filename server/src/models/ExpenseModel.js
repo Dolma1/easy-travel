@@ -51,6 +51,11 @@ const expenseSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
+        status: {
+          type: String,
+          enum: ["paid", "unpaid", 'dispute'],
+          default: "unpaid",
+        },
       },
     ],
     date: {
@@ -66,7 +71,7 @@ const expenseSchema = new mongoose.Schema(
       enum: ["pending", "settled", "disputed"],
       default: "pending",
     },
-    notes: String,
+    notes: [String],
   },
   {
     timestamps: true,

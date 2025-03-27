@@ -33,8 +33,8 @@ const Login = () => {
       dispatch(setCredentials({ user: res.user }));
       navigate("/dashboard");
       toast.success("Login Successful");
-    } catch (error) {
-      toast.error("Invalid Email or Password");
+    } catch (errors) {
+      toast.error(errors.message || "Invalid email or password");
     }
   };
 

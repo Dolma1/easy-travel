@@ -7,6 +7,7 @@ import {
   Menu,
   NotebookPen,
   UsersRound,
+  Layers,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -34,14 +35,20 @@ const SideBar = () => {
   return (
     <div
       className={cn(
-        "flex h-screen flex-col border-r  bg-card transition-all duration-300",
+        "flex h-screen flex-col border-r  bg-card transition-all duration-300 ",
         isSidebarCollapsed ? "w-[80px]" : "w-[250px]"
       )}
     >
-      <div className="flex h-16 items-center justify-between border-b px-4">
-        {!isSidebarCollapsed && (
-          <span className="text-lg font-semibold">Easy Travel</span>
+      <div className="flex h-16 items-center justify-between border-b px-4 ">
+        {!isSidebarCollapsed ? (
+          <span className="text-lg font-semibold flex gap-2 items-center text-[#586BAF]">
+            <Layers className="h-6 w-6" />
+            Easy Travel
+          </span>
+        ) : (
+          <Layers className="h-6 w-6  text-[#586BAF]" />
         )}
+
         <Button
           variant="ghost"
           size="icon"
@@ -65,7 +72,7 @@ const SideBar = () => {
               >
                 <item.icon className="h-5 w-5" />
                 {!isSidebarCollapsed && (
-                  <span className="ml-3">{item.label}</span>
+                  <span className="ml-3">{item.label} </span>
                 )}
               </Button>
             </Link>

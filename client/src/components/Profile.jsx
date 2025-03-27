@@ -106,6 +106,7 @@ function Profile() {
   };
 
   const onSubmit = async (data) => {
+    console.log(data);
     try {
       const response = await updateProfile(data).unwrap();
       if (response.success) {

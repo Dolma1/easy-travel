@@ -1,6 +1,11 @@
+import { useSelector } from "react-redux";
 import { Button } from "./ui/button";
+import { Link } from "react-router-dom";
+import { UserPlus } from "lucide-react";
 
 const Top = () => {
+  const userId = useSelector((state) => state.auth.user);
+
   return (
     <>
       <section className="px-4 md:px-10 lg:px-20 mt-[120px]  mb-20">
@@ -25,7 +30,17 @@ const Top = () => {
               The easy-to-use zero-based budgeting app that helps you keep tabs
               on your money at a glance—anytime, anywhere.
             </p>
-            <Button>Create Your Free Account</Button>
+            {userId ? (
+              <>
+                <Link to="/dashboard">
+                  <Button>Get The Dashboard</Button>
+                </Link>
+              </>
+            ) : (
+              <Link to="/register">
+                <Button>Create Your Free Account</Button>
+              </Link>
+            )}
           </div>
           <div className="">
             <img

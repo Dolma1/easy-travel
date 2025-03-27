@@ -15,7 +15,7 @@ function Faq() {
   const faqItems = [
     {
       id: 1,
-      question: "What is an Expense Tracker?",
+      question: "What is an Easy Travel?",
       answer:
         "A tool that helps you track income and expenses, categorize them, and manage your finances better.",
       icon: <DollarSign className="w-6 h-6" />,
@@ -69,7 +69,7 @@ function Faq() {
             Frequently Asked Questions
           </h1>
           <p className="text-lg text-[#97A3CD]">
-            Everything you need to know about our Expense Tracker
+            Everything you need to know about our Easy Travel
           </p>
         </div>
 
