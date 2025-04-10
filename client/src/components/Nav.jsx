@@ -1,15 +1,6 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import {
-  Home,
-  Layers,
-  Info,
-  LogIn,
-  UserPlus,
-  FileCog,
-  UserCircle,
-  Settings,
-} from "lucide-react";
+import { Layers, LogIn, UserPlus, UserCircle, Settings } from "lucide-react";
 import Menu from "./Menu";
 import LogoutButton from "@/components/Header/LogoutButton";
 
@@ -25,6 +16,18 @@ import {
 
 const Nav = () => {
   const userdata = useSelector((state) => state.auth.user);
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      const offset = 50;
+      const sectionPosition =
+        section.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: sectionPosition - offset,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <nav className="fixed w-full top-0 z-50 ">
@@ -51,27 +54,37 @@ const Nav = () => {
 
             {/* Desktop navigation */}
             <div className="hidden md:flex md:items-center md:space-x-8">
-              <Link
-                to=""
+              <button
+                onClick={() => scrollToSection("home")}
                 className="flex items-center space-x-1 text-gray-600 hover:text-indigo-600 font-medium transition-colors"
               >
-                <Home className="h-4 w-4" />
                 <span>Home</span>
-              </Link>
-              <a
-                href="#about"
+              </button>
+              <button
+                onClick={() => scrollToSection("features")}
                 className="flex items-center space-x-1 text-gray-600 hover:text-indigo-600 font-medium transition-colors"
               >
-                <Info className="h-4 w-4" />
+                <span>Features</span>
+              </button>
+
+              <button
+                onClick={() => scrollToSection("solutions")}
+                className="flex items-center space-x-1 text-gray-600 hover:text-indigo-600 font-medium transition-colors"
+              >
+                <span>Solutions</span>
+              </button>
+              <button
+                onClick={() => scrollToSection("about")}
+                className="flex items-center space-x-1 text-gray-600 hover:text-indigo-600 font-medium transition-colors"
+              >
                 <span>About</span>
-              </a>
-              <Link
-                to="/contact"
+              </button>
+              <button
+                onClick={() => scrollToSection("works")}
                 className="flex items-center space-x-1 text-gray-600 hover:text-indigo-600 font-medium transition-colors"
               >
-                <FileCog className="h-4 w-4" />
-                <span>Services</span>
-              </Link>
+                <span>Works</span>
+              </button>
             </div>
 
             {/* Auth buttons */}

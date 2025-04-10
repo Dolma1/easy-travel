@@ -10,6 +10,11 @@ import {
   Activate,
   PageNotFound,
   Settlement,
+
+  TermsOfService,
+  PrivacyPolicy1,
+  Support,
+  AdminDashboard,
 } from "./components";
 import { Provider } from "react-redux";
 
@@ -22,8 +27,12 @@ import {
   GroupPage,
   JournalsPage,
   SingleGroupPage,
+  ExploreJournalPage,
 } from "./pages";
 import AuthLayout from "./routes/AuthLayout";
+import AdminLayout from "./routes/AdminLayout";
+import AdminPage from "./pages/AdminPage";
+import AdminDashboardPage from "./pages/AdminPage";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +58,30 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={false}>
             <Activate />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/terms",
+        element: (
+          <AuthLayout authentication={false}>
+            <TermsOfService />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/privacy",
+        element: (
+          <AuthLayout authentication={false}>
+            <PrivacyPolicy1 />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/support",
+        element: (
+          <AuthLayout authentication={false}>
+            <Support />
           </AuthLayout>
         ),
       },
@@ -111,7 +144,15 @@ const router = createBrowserRouter([
           </AuthLayout>
         ),
       },
-
+      
+      {
+        path: "/explore",
+        element: (
+          <AuthLayout authentication={true}>
+            <ExploreJournalPage />
+          </AuthLayout>
+        ),
+      },
       {
         path: "/journal/:id",
         element: (
@@ -128,17 +169,35 @@ const router = createBrowserRouter([
           </AuthLayout>
         ),
       },
+
+
       {
         path: "*",
         element: <PageNotFound />,
       },
     ],
   },
+
+  //Admin
+  {
+    path: "/admin",
+    element: <AdminPage />,
+    children: [
+      {
+        index: true,
+        element: (
+          <AdminLayout>
+            <AdminDashboard />
+          </AdminLayout>
+        ),
+      },
+    ],
+  },
 ]);
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  // <StrictMode>
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-  </StrictMode>
+  // </StrictMode>
 );

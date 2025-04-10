@@ -10,7 +10,8 @@ import { fileURLToPath } from "url";
 import sendMail from "../utils/sendMail.js";
 import { group } from "console";
 import ejs from "ejs";
-
+import axios from "axios";
+import { updateSettlement } from "../utils/updateSettlement.js";
 class ExpenseController {
   static createExpense = asyncHandler(async (req, res, next) => {
     const {
@@ -284,11 +285,10 @@ class ExpenseController {
         .populate("paidBy", "name email")
         .populate("splitBetween.user", "name email");
 
-      // Calculate amounts
-      let totalOwed = 0; // What the user owes others
-      let totalToReceive = 0; // What others owe the user
-      const debts = []; // Detailed debts the user owes
-      const receivables = []; // Detailed amounts owed to the user
+      let totalOwed = 0;
+      let totalToReceive = 0;
+      const debts = [];
+      const receivables = [];
 
       expenses.forEach((expense) => {
         // Check if user is the payer
@@ -429,11 +429,13 @@ class ExpenseController {
     }
   });
 
+  // Cash Handling
   static settleExpense = asyncHandler(async (req, res, next) => {
     const expenseId = req.params.id;
     const userId = req.user._id;
     const { note } = req.body;
 
+    /*
     // Find the expense with group and user details populated
     const expense = await Expense.findById(expenseId)
       .populate("paidBy", "name")
@@ -507,6 +509,13 @@ class ExpenseController {
     });
     */
 
+    const { expense, originalStatus, allPaid } = await updateSettlement({
+      expenseId,
+      userId,
+      note,
+      paymentMethod: "cash",
+    });
+
     res.status(200).json({
       success: true,
       data: expense,
@@ -545,13 +554,100 @@ class ExpenseController {
       expense.notes.push(`${req.user.name}: ${note ?? "No notes provided"}`);
       await expense.save();
 
-      // TODO: SEND NOTIFICATIONS FOR THE USERS REGARDING THIS disputationg
+      // TODO: SEND NOTIFICATIONS FOR THE USERS REGARDING THIS disputation
       res.status(200).json({
         success: true,
         message: "Expense has been disputed",
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
+    }
+  });
+
+  static initiatePayment = asyncHandler(async (req, res, next) => {
+    const { amount, expenseId, paidTo } = req.body;
+    const user = await User.findById(req.user._id);
+    const payload = {
+      return_url: `http://localhost:3000/groups/settlement/${expenseId}`,
+      website_url: "http://localhost:3000",
+      amount: amount * 100,
+      purchase_order_id: expenseId,
+      purchase_order_name: paidTo.name,
+      customer_info: {
+        name: user.name,
+        email: user.email,
+        phone: user.phone || 908832121,
+      },
+    };
+
+    try {
+      const response = await axios.post(
+        `${process.env.KHALTI_GATEWAY_URL}/api/v2/epayment/initiate/`,
+        payload,
+        {
+          headers: {
+            Authorization: `key ${process.env.KHALTI_SECRET_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      res.json({
+        success: true,
+        payment_url: response.data.payment_url,
+        pidx: response.data.pidx,
+      });
+    } catch (error) {
+      console.error(error.response ? error.response.data : error.message);
+      res.status(500).json({
+        success: false,
+        message: "Payment initiation failed",
+      });
+    }
+  });
+
+  static completePayment = asyncHandler(async (req, res, next) => {
+    const { pidx } = req.query;
+    const { expenseId } = req.body;
+    if (!pidx) {
+      return res
+        .status(400)
+        .json({ success: false, message: "pidx is required" });
+    }
+    const verificationResponse = await axios.post(
+      `${process.env.KHALTI_GATEWAY_URL}/api/v2/epayment/lookup/`,
+      { pidx },
+      {
+        headers: {
+          Authorization: `key ${process.env.KHALTI_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const paymentInfo = verificationResponse.data;
+    paymentInfo.total_amount = paymentInfo.total_amount / 100;
+    const userId = req.user._id;
+    if (paymentInfo.status === "Completed") {
+      try {
+        await updateSettlement({
+          amount: paymentInfo.total_amount,
+          expenseId,
+          note: "Payment made through khalti",
+          userId:userId
+        });
+        res.json({
+          success: true,
+          message: "Payment verified ",
+          paymentInfo,
+        });
+      } catch (error) {
+        return next(new ErrorHandler(error.message, 400))
+      }
+    } else {
+      res.status(400).json({
+        success: false,
+        message: "Payment not completed",
+        paymentInfo,
+      });
     }
   });
 }

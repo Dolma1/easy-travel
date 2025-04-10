@@ -1,7 +1,9 @@
-import { Ghost, HomeIcon } from 'lucide-react';
-import { Button } from './ui/button';
+import { Ghost, HomeIcon } from "lucide-react";
+import { Button } from "./ui/button";
+import { useNavigate } from "react-router-dom";
 
 function PageNotFound() {
+  const nav = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-blue-200 flex items-center justify-center p-4 overflow-hidden">
       <div className="max-w-2xl w-full text-center space-y-8">
@@ -23,7 +25,7 @@ function PageNotFound() {
         </div>
 
         <Button
-          onClick={() => (window.location.href = '/')}
+          onClick={() => nav("/")}
           className="animate-fade-up [animation-delay:400ms] inline-flex items-center px-6 py-3 bg-[#FF8E1F] hover:bg-[#FF7A00] text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
           size="lg"
         >

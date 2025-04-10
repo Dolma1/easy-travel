@@ -6,6 +6,8 @@ import Profile from "./ProfilePage";
 import GroupPage from "./GroupPage";
 import SingleGroupPage from "./SingleGroupPage";
 import JournalsPage from "./JournalsPage";
+import ExploreJournalPage from "./ExploreJournalPage";
+
 
 // import SingleJournalPage from './SingleJournalPage'
 export {
@@ -17,4 +19,5 @@ export {
   SingleGroupPage,
   Profile,
   GroupPage,
+  ExploreJournalPage,
 };

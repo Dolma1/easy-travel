@@ -66,7 +66,7 @@ export default function AddJournal() {
     try {
       const updatedData = { ...data, tags };
       const res = await createJournal(updatedData).unwrap();
-      console.log("Journal created:", res);
+      
       refetch();
       toast.success("Journal entry created successfully!");
       setOpen(false);

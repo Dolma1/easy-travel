@@ -37,6 +37,17 @@ expenseRouter.post(
   isAuthenticated,
   ExpenseController.requestSettlement
 );
+expenseRouter.post(
+  "/initiate-payment",
+  isAuthenticated,
+  ExpenseController.initiatePayment
+);
+
+expenseRouter.put(
+  "/complete-payment",
+  isAuthenticated,
+  ExpenseController.completePayment
+);
 
 expenseRouter.put("/:id", isAuthenticated, ExpenseController.updateExpense);
 

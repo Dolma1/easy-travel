@@ -12,7 +12,16 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useRegisterMutation } from "../app/slices/userApiSlice";
 import { toast } from "react-toastify";
-import { User, Mail, Lock, KeyRound, ArrowRight } from "lucide-react";
+import {
+  User,
+  Mail,
+  Lock,
+  KeyRound,
+  ArrowRight,
+  EyeOff,
+  Eye,
+} from "lucide-react";
+import { useState } from "react";
 
 const Register = () => {
   const {
@@ -25,11 +34,13 @@ const Register = () => {
 
   const navigate = useNavigate();
   const [storeRegister, { isLoading }] = useRegisterMutation();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword1, setShowPassword1] = useState(false);
 
   const onSubmit = async (data) => {
     try {
       const res = await storeRegister(data);
-      console.log(data)
+      console.log(data);
       navigate("/activate", {
         state: { activationToken: res.data.activationToken },
       });
@@ -115,8 +126,8 @@ const Register = () => {
                   <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                   <Input
                     id="password"
-                    type="password"
-                    className="pl-10 input-transition"
+                    type={showPassword ? "text" : "password"}
+                    className="pl-10 pr-10 input-transition"
                     {...register("password", {
                       required: "Password is required",
                       minLength: {
@@ -126,6 +137,17 @@ const Register = () => {
                     })}
                     placeholder="Create a strong password"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                    onClick={() => setShowPassword(!showPassword)} // Toggle visibility
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
                 {errors.password && (
                   <p className="text-destructive text-sm mt-1">
@@ -145,8 +167,8 @@ const Register = () => {
                   <KeyRound className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                   <Input
                     id="confirmPassword"
-                    type="password"
-                    className="pl-10 input-transition"
+                    type={showPassword1 ? "text" : "password"}
+                    className="pl-10 pr-10 input-transition"
                     {...register("confirmPassword", {
                       required: "Please confirm your password",
                       validate: (value) =>
@@ -154,6 +176,17 @@ const Register = () => {
                     })}
                     placeholder="Confirm your password"
                   />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                    onClick={() => setShowPassword1(!showPassword1)} // Toggle visibility
+                  >
+                    {showPassword1 ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
                 {errors.confirmPassword && (
                   <p className="text-destructive text-sm mt-1">

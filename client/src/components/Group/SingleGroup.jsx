@@ -80,7 +80,7 @@ function SingleGroup() {
     isLoading: expensesLoading,
     refetch: expenseRefetch,
   } = useGetTravelExpensesQuery(id, {
-    pollingInterval: 3000, // Refetch every 30 seconds
+    pollingInterval: 30000, // Refetch every 30 seconds
   });
 
   const {
@@ -88,7 +88,7 @@ function SingleGroup() {
     refetch: groupRefetch,
     isLoading: groupLoading,
   } = useGetSingleTravelGroupQuery(id, {
-    pollingInterval: 3000,
+    pollingInterval: 30000,
   });
 
   const {
@@ -96,7 +96,7 @@ function SingleGroup() {
     isLoading: summaryLoading,
     refetch: summaryRefetch,
   } = useGetExpenseSummaryQuery(id, {
-    pollingInterval: 3000,
+    pollingInterval: 30000,
   });
 
   const [requestMoney, { isLoading: requestMoneyLoading }] =
@@ -108,7 +108,7 @@ function SingleGroup() {
     navigate(`/groups/settlement/${expenseId}`, {
       state: { groupId: id },
     });
-    window.location.reload()
+    window.location.reload();
   };
 
   const handleRequestMoney = async (expenseId) => {
@@ -165,7 +165,7 @@ function SingleGroup() {
                 : "text-gray-500 hover:bg-gray-50"
             }`}
           >
-            Your Summary
+            My Summary
           </button>
         </div>
         {activeTab === "activity" ? (
@@ -230,15 +230,22 @@ function SingleGroup() {
                                   )}
                                 </>
                               ) : (
-                                <>
-                                  <Badge
-                                    variant={"secondary"}
-                                    className="capitalize  bg-green-100 text-green-700 shadow-sm hover:bg-green-100 rounded-xl "
-                                  >
-                                    <CircleCheck className="w-[18px] mr-1 text-green-500" />
-                                    Already Settled
-                                  </Badge>
-                                </>
+                                expense.splitBetween.some(
+                                  (entry) =>
+                                    String(entry.user._id) ===
+                                      String(userdata) &&
+                                    entry.status === "paid"
+                                ) && (
+                                  <>
+                                    <Badge
+                                      variant={"secondary"}
+                                      className="capitalize  bg-green-100 text-green-700 shadow-sm hover:bg-green-100 rounded-xl "
+                                    >
+                                      <CircleCheck className="w-[18px] mr-1 text-green-500" />
+                                      Already Settled
+                                    </Badge>
+                                  </>
+                                )
                               )}
                               {expense.paidBy._id === userdata && (
                                 <button

@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { SideBar } from "..";
 import GroupNav from "./GroupNav";
 import {
+  useCompletePaymentMutation,
   useDisputeExpenseMutation,
   useGetSingleExpenseQuery,
+  useInitiatePaymentMutation,
+  useExpenseSettlementMutation,
 } from "@/app/slices/expenseApiSlice";
 import {
   CalendarDays,
@@ -18,13 +21,15 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useSelector } from "react-redux";
-import { useExpenseSettlementMutation } from "../../app/slices/expenseApiSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
+import { useCallback } from "react";
+
 const Settlement = () => {
   const location = useLocation();
-  const id = location.state?.groupId;
+  let groupId = localStorage.getItem("groupId") || location.state?.groupId;
+
   const { expenseId } = useParams();
   const { data } = useGetSingleExpenseQuery(expenseId);
   const [showSettleModal, setShowSettleModal] = useState(false);
@@ -34,8 +39,56 @@ const Settlement = () => {
   const userdata = useSelector((state) => state.auth?.user?._id);
   const [expenseSettlement] = useExpenseSettlementMutation();
   const [disputeExpense] = useDisputeExpenseMutation();
-
+  const [initiateKhalti] = useInitiatePaymentMutation();
+  const [completePayment] = useCompletePaymentMutation();
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [paymentResult, setPaymentResult] = useState(null);
   const navigate = useNavigate();
+
+  const completePaymentHandler = async (pidx) => {
+    try {
+      const paymentData = await completePayment({ pidx, expenseId }).unwrap();
+      if (paymentData.success) {
+        setPaymentResult(paymentData);
+        setShowSuccessPopup(true);
+      }
+      return;
+    } catch (error) {
+      toast.error(error?.data?.message || "Payment verification failed");
+    }
+  };
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pidxFromUrl = urlParams.get("pidx");
+    if (pidxFromUrl) {
+      // await completePayment()
+      completePaymentHandler(pidxFromUrl);
+    }
+    if (localStorage.getItem("groupId")) {
+      return;
+    } else {
+      localStorage.setItem("groupId", location.state.groupId);
+    }
+  }, []);
+
+  const resetForm = useCallback(() => {
+    setShowSuccessPopup(false);
+    // let id = localStorage.getItem('groupId')
+    window.history.pushState(
+      {},
+      document.title,
+      `/groups/settlements/${expenseId}`
+    );
+    // TODO: console.log(id); This is undefined+
+    console.log(groupId);
+    if (groupId) {
+      navigate(`/groups/${groupId}`);
+      localStorage.removeItem("groupId");
+      window.location.reload();
+      toast.success("Payment Successfull..");
+    }
+  }, [groupId, navigate]); // Add all dependencies here
+
   if (!data) return null;
 
   const expense = data.data;
@@ -73,13 +126,37 @@ const Settlement = () => {
       setSelectedAction(null);
     }
   };
+  const userShare =
+    expense.splitBetween.find((split) => split.user._id === userdata)?.share ||
+    0;
+
+  const initiatePayment = async (data) => {
+    console.log(data);
+    try {
+      const response = await initiateKhalti(data).unwrap();
+      console.log(response);
+      if (response.success) {
+        window.location.href = response?.payment_url;
+      }
+      if (response.error) {
+        toast.error(error.data.message);
+      }
+    } catch (error) {
+      toast.error(error.data?.message || "Payment initation failed");
+    }
+  };
+
+  // const resetForm = useCallback(() => {
+  //   setShowSuccessPopup(false);
+  //   navigate(`groups/${id}`);
+  //   window.location.reload();
+  // }, []);
 
   return (
     <div className="flex w-full bg-gray-50">
       <SideBar />
       <div className="flex-1">
-        <GroupNav id={id} />
-
+        <GroupNav id={groupId} />
         <div className="max-w-4xl mx-auto px-4  mt-10">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             {/* Header */}
@@ -262,20 +339,26 @@ const Settlement = () => {
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           {selectedAction === "settle"
-                            ? "Add a note (optional)"
+                            ? selectedPaymentMethod === "cash"
+                              ? "Add a note (optional)"
+                              : ""
                             : "Reason for dispute"}
                         </label>
-                        <textarea
-                          value={note}
-                          onChange={(e) => setNote(e.target.value)}
-                          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          rows={3}
-                          placeholder={
-                            selectedAction === "settle"
-                              ? "Add any additional information..."
-                              : "Please explain the reason for the dispute..."
-                          }
-                        />
+                        {selectedPaymentMethod === "khalti" ? (
+                          <></>
+                        ) : (
+                          <textarea
+                            value={note}
+                            onChange={(e) => setNote(e.target.value)}
+                            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            rows={3}
+                            placeholder={
+                              selectedAction === "settle"
+                                ? "Add any additional information..."
+                                : "Please explain the reason for the dispute..."
+                            }
+                          />
+                        )}
                       </div>
 
                       <div className="flex space-x-3 pt-4">
@@ -287,7 +370,7 @@ const Settlement = () => {
                         </button>
 
                         {selectedAction === "settle" &&
-                          selectedPaymentMethod && (
+                          selectedPaymentMethod === "cash" && (
                             <Button
                               onClick={() => handleSettlement("settle")}
                               className={`flex-1 px-4 py-2 text-white rounded-lg ${
@@ -296,9 +379,26 @@ const Settlement = () => {
                                   : "bg-purple-600 hover:bg-purple-700"
                               }`}
                             >
-                              {selectedPaymentMethod === "cash"
-                                ? "Settle with Cash"
-                                : "Pay via Khalti"}
+                              Settle with Cash
+                            </Button>
+                          )}
+                        {selectedAction === "settle" &&
+                          selectedPaymentMethod === "khalti" && (
+                            <Button
+                              onClick={() =>
+                                initiatePayment({
+                                  amount: userShare,
+                                  expenseId: expenseId,
+                                  paidTo: expense.paidBy,
+                                })
+                              }
+                              className={`flex-1 px-4 py-2 text-white rounded-lg ${
+                                selectedPaymentMethod === "cash"
+                                  ? "text-black"
+                                  : "bg-purple-600 hover:bg-purple-700"
+                              }`}
+                            >
+                              Pay with Khalti
                             </Button>
                           )}
 
@@ -313,6 +413,55 @@ const Settlement = () => {
                       </div>
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+            {showSuccessPopup && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 animate-fade-in">
+                  <div className="text-center">
+                    <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                      <CheckCircle2 className="h-6 w-6 text-indigo-800" />
+                    </div>
+                    <h3 className="mt-3 text-lg font-medium text-gray-900">
+                      Payment Successful!
+                    </h3>
+                    <div className="mt-2 text-sm text-gray-500">
+                      <p>Your payment has been processed successfully.</p>
+
+                      {paymentResult?.paymentInfo && (
+                        <div className="mt-4 bg-gray-50 p-3 rounded-lg text-left">
+                          <h4 className="font-medium text-gray-700 mb-2">
+                            Transaction Details:
+                          </h4>
+                          <div className="space-y-1">
+                            <p className="flex justify-between">
+                              <span className="font-medium">Amount:</span>
+                              <span>
+                                NPR {paymentResult.paymentInfo.total_amount}
+                              </span>
+                            </p>
+                            <p className="flex justify-between">
+                              <span className="font-medium">
+                                Transaction ID:
+                              </span>
+                              <span className="font-mono">
+                                {paymentResult.paymentInfo.transaction_id}
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mt-5">
+                    <button
+                      onClick={resetForm}
+                      className="w-full flex justify-center py-2 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

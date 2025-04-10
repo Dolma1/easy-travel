@@ -1,35 +1,16 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import {
-  useGetJournalQuery,
-  useDeleteJournalMutation,
-} from "@/app/slices/journalApiSlice";
-import { useSelector } from "react-redux";
-
+import { useGetPublicJournalQuery } from "@/app/slices/journalApiSlice";
 import { Link } from "react-router-dom";
-import { Pen, Trash2, Heart, MapPin, Tag } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { toast } from "react-toastify";
+import { Heart, MapPin, Tag } from "lucide-react";
 import { AddJournal, DashboardNav } from "..";
 import { useEffect, useState } from "react";
 
-export default function JournalList() {
-  const user = useSelector((state) => state.auth.user);
-  const { data, isLoading, error, refetch } = useGetJournalQuery();
-  const [deleteJournal, { isLoading: isDeleting }] = useDeleteJournalMutation();
+export default function ExploreJournalList() {
+  const { data, isLoading, error } = useGetPublicJournalQuery();
   const stripHtmlTags = (htmlString) => {
     const doc = new DOMParser().parseFromString(htmlString, "text/html");
-    return doc.body.textContent || ""; // Extract plain text from the HTML
+    return doc.body.textContent || "";
   };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const journals = Array.isArray(data?.allJournals) ? data.allJournals : [];
@@ -41,17 +22,6 @@ export default function JournalList() {
       setSearchData(reversedData);
     }
   }, [journals]);
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteJournal(id).unwrap();
-      refetch();
-      toast.success("Journal deleted successfully");
-    } catch (error) {
-      toast.error("Failed to delete journal");
-      console.error("Delete error:", error);
-    }
-  };
 
   if (isLoading) {
     return (
@@ -84,16 +54,16 @@ export default function JournalList() {
         <div className="px-8 mt-6">
           <div className="pb-8 flex justify-between items-center ">
             <div className="">
-              <h1 className="text-4xl font-bold">Journal</h1>
+              <h1 className="text-4xl font-bold">Explore Journals</h1>
               <p className="text-muted-foreground">
-                View and manage your travel journal entries
+                View the Journals Written by fellow travellers
               </p>
             </div>
             <AddJournal />
           </div>
         </div>
         <div className="text-center py-10">
-          <p className="text-xl text-gray-500">You have no journals yet.</p>
+          <p className="text-xl text-gray-500">There are no public journals yet.</p>
         </div>
       </>
     );
@@ -109,9 +79,9 @@ export default function JournalList() {
       <div className="px-8 mt-6">
         <div className="pb-8 flex justify-between items-center ">
           <div className="">
-            <h1 className="text-4xl font-bold">Journal</h1>
+            <h1 className="text-4xl font-bold">Explore Journals</h1>
             <p className="text-muted-foreground">
-              View and manage your travel journal entries
+              View the Journals Written by fellow travellers
             </p>
           </div>
           <AddJournal />
@@ -120,8 +90,6 @@ export default function JournalList() {
         <ScrollArea className="h-[calc(100vh-29vh)] ">
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 bg-gray-50 p-8 ">
             {SearchData.map((journal) => {
-              const isOwner = user?._id === journal?.author?._id;
-
               return (
                 <div
                   className="w-full max-w-md mx-auto relative group"
@@ -137,54 +105,6 @@ export default function JournalList() {
                         height={400}
                         style={{ aspectRatio: "600/400", objectFit: "fill" }}
                       />
-                      {/* Action Buttons Overlay - Only show for owner */}
-                      {isOwner && (
-                        <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Link to={`/journal/edit/${journal._id}`}>
-                            <Button
-                              size="icon"
-                              className="w-8 h-8 bg-white/90 hover:bg-white text-gray-700 rounded-full shadow-lg"
-                              title="Edit Journal"
-                            >
-                              <Pen className="w-4 h-4" />
-                            </Button>
-                          </Link>
-
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                size="icon"
-                                variant="destructive"
-                                className="w-8 h-8 rounded-full shadow-lg"
-                                title="Delete Journal"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Are you sure?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. This will
-                                  permanently delete your journal entry.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleDelete(journal._id)}
-                                  className="bg-red-600 hover:bg-red-700"
-                                  disabled={isDeleting}
-                                >
-                                  {isDeleting ? "Deleting..." : "Delete"}
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      )}
                     </div>
 
                     <div className="p-6 space-y-4">

@@ -10,6 +10,18 @@ import {
 } from "lucide-react";
 
 const Footer = () => {
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      const offset = 50;
+      const sectionPosition =
+        section.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: sectionPosition - offset,
+        behavior: "smooth",
+      });
+    }
+  };
   return (
     <footer className="px-4 md:px-8 lg:px-16 py-8 bg-gray-300 text-gray-800">
       <div className="flex flex-wrap gap-8 justify-between">
@@ -25,8 +37,8 @@ const Footer = () => {
             </span>
           </Link>
           <p className="mt-2 text-sm">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Your footer
-            description goes here.
+            The easy-to-use zero-based budgeting app that helps you keep tabs on
+            your money at a glance anytime, anywhere
           </p>
           <div className="flex gap-4 mt-4">
             <a
@@ -59,41 +71,41 @@ const Footer = () => {
         {/* Navigation Links */}
         <div className="flex-1 min-w-[150px]">
           <h2 className="font-semibold mb-2">Quick Links</h2>
-          <Link
-            to="/"
+          <button
+            onClick={() => scrollToSection("home")}
             className="block hover:text-gray-600 transition-colors py-1"
           >
-            Home
-          </Link>
-          <Link
-            to="/about"
+            <span>Home</span>
+          </button>
+          <button
+            onClick={() => scrollToSection("about")}
             className="block hover:text-gray-600 transition-colors py-1"
           >
-            About Us
-          </Link>
-          <Link
-            to="/services"
+            <span>About Us</span>
+          </button>
+          <button
+            onClick={() => scrollToSection("works")}
             className="block hover:text-gray-600 transition-colors py-1"
           >
-            Services
-          </Link>
-          <Link
-            to="/contact"
+            <span>Works</span>
+          </button>
+          <button
+            onClick={() => scrollToSection("solutions")}
             className="block hover:text-gray-600 transition-colors py-1"
           >
-            Contact
-          </Link>
+            <span>Solutions</span>
+          </button>
         </div>
 
         {/* Additional Sections */}
         <div className="flex-1 min-w-[150px]">
           <h2 className="font-semibold mb-2">Resources</h2>
-          <Link
-            to="/faq"
+          <button
+            onClick={() => scrollToSection("faq")}
             className="block hover:text-gray-600 transition-colors py-1"
           >
-            FAQ
-          </Link>
+            <span>FAQs</span>
+          </button>
           <Link
             to="/terms"
             className="block hover:text-gray-600 transition-colors py-1"
@@ -134,7 +146,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-600">
-        <p>© {new Date().getFullYear()}Easy Travel. All rights reserved.</p>
+        <p>© {new Date().getFullYear()} Easy Travel. All rights reserved.</p>
       </div>
     </footer>
   );

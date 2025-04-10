@@ -93,7 +93,7 @@ export default function EditJournal() {
       await updateJournal(updatedData).unwrap();
       refetch();
       toast.success("Journal entry updated successfully!");
-      navigate(`/journal/${id}`);
+      navigate(`/journal`);
     } catch (error) {
       console.error("Error updating journal:", error);
       toast.error(error?.data?.message || "Failed to update journal entry");

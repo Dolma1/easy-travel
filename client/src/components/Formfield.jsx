@@ -125,7 +125,7 @@ export default function Formfield({
 
         {/* Tags Field */}
         <div className="flex items-center gap-4">
-          <Label className="text-right pt-2">Tags</Label>
+          <Label className="text-right ">Tags</Label>
           <div className="col-span-3 space-y-2 w-full">
             <div className="flex gap-2">
               <div className="relative flex-1">

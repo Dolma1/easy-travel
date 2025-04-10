@@ -76,6 +76,24 @@ export const expenseApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
+
+    initiatePayment: builder.mutation({
+      query: (data) => ({
+        url: `${expense_url}/initiate-payment`,
+        method: "POST",
+        body: data,
+        credentials: "include",
+      }),
+    }),
+
+    completePayment: builder.mutation({
+      query: ({pidx, expenseId}) => ({
+        url: `${expense_url}/complete-payment?pidx=${pidx}`,
+        method: "PUT",
+        body: {expenseId},
+        credentials: "include",
+      }),
+    }),
   }),
 });
 
@@ -86,5 +104,7 @@ export const {
   useGetExpenseSummaryQuery,
   useGetSingleExpenseQuery,
   useRequestMoneyMutation,
-  useDisputeExpenseMutation
+  useDisputeExpenseMutation,
+  useInitiatePaymentMutation,
+  useCompletePaymentMutation
 } = expenseApiSlice;

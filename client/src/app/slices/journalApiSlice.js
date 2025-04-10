@@ -29,6 +29,15 @@ export const journalApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    // Gets Public journals of the user
+    getPublicJournal: builder.query({
+      query: () => ({
+        url: `${journal_url}/public-journal`,
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
+
     deleteJournal: builder.mutation({
       query: (journalId) => ({
         url: `${journal_url}/${journalId}`,
@@ -53,4 +62,5 @@ export const {
   useGetJournalQuery,
   useDeleteJournalMutation,
   useGetSingleJournalQuery,
+  useGetPublicJournalQuery,
 } = journalApiSlice;

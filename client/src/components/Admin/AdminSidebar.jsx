@@ -23,19 +23,19 @@ const SideBar = () => {
     {
       icon: LayoutDashboard,
       label: "Dashboard",
-      href: "/dashboard",
+      href: "/admin",
     },
-    { icon: NotebookPen, label: "My Journal", href: "/journal" },
-    { icon: NotebookTabs, label: "Explore Journal", href: "/explore" },
-    { icon: UsersRound, label: "Group", href: "/groups" },
-    { icon: PieChart, label: "Reports", href: "/reports" },
-    { icon: Settings, label: "Settings", href: "/settings" },
+    { icon: NotebookPen, label: "My Journal", href: "/admin/journal" },
+    // { icon: NotebookTabs, label: "Explore Journal", href: "/journals" },
+    // { icon: UsersRound, label: "Group", href: "/groups" },
+    // { icon: PieChart, label: "Reports", href: "/reports" },
+    { icon: Settings, label: "Settings", href: "/admin/settings" },
   ];
 
   return (
     <div
       className={cn(
-        "flex h-screen flex-col border-r  bg-card transition-all duration-300 ",
+        "flex  flex-col border-r  bg-slate-100 transition-all duration-300 ",
         isSidebarCollapsed ? "w-[80px]" : "w-[250px]"
       )}
     >
@@ -43,7 +43,7 @@ const SideBar = () => {
         {!isSidebarCollapsed ? (
           <span className="text-lg font-semibold flex gap-2 items-center text-[#586BAF]">
             <Layers className="h-6 w-6" />
-            Easy Travel
+           Admin 
           </span>
         ) : (
           <Layers className="h-6 w-6  text-[#586BAF]" />

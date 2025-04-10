@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 
 const AdminLayout = ({ children }) => {
   const userInfo = useSelector((state) => state?.auth?.user);
+  console.log(userInfo)
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   useEffect(() => {

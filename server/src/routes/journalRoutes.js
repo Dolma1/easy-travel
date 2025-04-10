@@ -8,6 +8,8 @@ journalRouter.post("/", isAuthenticated, JournalController.createJournal);
 
 journalRouter.get("/", isAuthenticated, JournalController.getAllJournal);
 
+journalRouter.get("/public-journal", isAuthenticated, JournalController.getPublicJournal);
+
 journalRouter.put("/:id", isAuthenticated, JournalController.updateJournal);
 
 journalRouter.delete("/:id", isAuthenticated, JournalController.deleteJournal);

@@ -1,6 +1,4 @@
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 import {
   Heart,
   MapPin,
@@ -25,39 +23,20 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  useGetPublicJournalQuery,
-  useDeleteJournalMutation,
-} from "@/app/slices/journalApiSlice";
 
-function SingleJournalPage() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.user);
-
-  const { data, isLoading, error, refetch } = useGetPublicJournalQuery();
-  console.log(data)
-  const [deleteJournal, { isLoading: isDeleting }] = useDeleteJournalMutation();
-
-  const journal = data?.allJournals?.find((j) => j._id === id);
-  const isOwner = user?._id === journal?.author?._id;
-  console.log(isOwner)
-
+function JournalList({
+  journal,
+  isOwner,
+  isLoading = false,
+  error = false,
+  onDelete,
+  isDeleting = false,
+  backLink,
+  editLink,
+}) {
   const stripHtmlTags = (htmlString) => {
     const doc = new DOMParser().parseFromString(htmlString, "text/html");
     return doc.body.textContent || "";
-  };
-
-  const handleDelete = async () => {
-    try {
-      await deleteJournal(id).unwrap();
-      refetch();
-      toast.success("Journal deleted successfully");
-      navigate("/journal");
-    } catch (error) {
-      toast.error("Failed to delete journal");
-      console.error("Delete error:", error);
-    }
   };
 
   if (isLoading) {
@@ -70,6 +49,7 @@ function SingleJournalPage() {
     );
   }
 
+  console.log(journal)
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -87,13 +67,13 @@ function SingleJournalPage() {
           <p className="text-xl text-gray-500 dark:text-gray-400 mb-4">
             Journal not found.
           </p>
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center shadow-sm p-2 "
+          <Link
+            to={backLink}
+            className="inline-flex items-center px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Journals
-          </button>
+          </Link>
         </div>
       </div>
     );
@@ -106,18 +86,18 @@ function SingleJournalPage() {
           <div className="max-w-4xl mx-auto">
             {/* Header with Navigation */}
             <div className="flex items-center justify-between mb-8">
-              <button
-                onClick={() => navigate(-1)}
-                className="flex items-center shadow-sm p-2 "
+              <Link
+                to={backLink}
+                className="inline-flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeft className="w-5 h-5 mr-2" />
                 Back to Journals
-              </button>
+              </Link>
 
-              {isOwner && (
+              {isOwner && editLink && (
                 <div className="flex items-center gap-4">
                   <Link
-                    to={`/journal/edit/${journal._id}`}
+                    to={editLink}
                     className="inline-flex items-center px-4 py-2 bg-yellow-500 hover:bg-yellow-700 text-white rounded-lg transition-colors"
                   >
                     <Edit className="w-4 h-4 mr-2" />
@@ -146,7 +126,7 @@ function SingleJournalPage() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={handleDelete}
+                          onClick={onDelete}
                           className="bg-red-600 hover:bg-red-700 text-white"
                         >
                           {isDeleting ? "Deleting..." : "Delete"}
@@ -232,4 +212,4 @@ function SingleJournalPage() {
   );
 }
 
-export default SingleJournalPage;
+export default JournalList;
