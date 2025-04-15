@@ -26,10 +26,6 @@ const SideBar = () => {
       href: "/admin",
     },
     { icon: NotebookPen, label: "My Journal", href: "/admin/journal" },
-    // { icon: NotebookTabs, label: "Explore Journal", href: "/journals" },
-    // { icon: UsersRound, label: "Group", href: "/groups" },
-    // { icon: PieChart, label: "Reports", href: "/reports" },
-    { icon: Settings, label: "Settings", href: "/admin/settings" },
   ];
 
   return (
@@ -43,7 +39,7 @@ const SideBar = () => {
         {!isSidebarCollapsed ? (
           <span className="text-lg font-semibold flex gap-2 items-center text-[#586BAF]">
             <Layers className="h-6 w-6" />
-           Admin 
+            Admin
           </span>
         ) : (
           <Layers className="h-6 w-6  text-[#586BAF]" />

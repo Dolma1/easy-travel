@@ -33,6 +33,10 @@ const journalSchema = new mongoose.Schema(
     location: {
       type: String,
     },
+    
+    budget: {
+      type: String,
+    },
 
     tags: [
       {

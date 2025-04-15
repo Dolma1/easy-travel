@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { ImageIcon, MapPin, Tag, SmilePlus, X } from "lucide-react";
+import { ImageIcon, MapPin, Tag, SmilePlus, X, Coins, CookingPot, HandCoins } from "lucide-react";
 
 export default function Formfield({
   control,
@@ -77,33 +77,49 @@ export default function Formfield({
             )}
           />
         </div>
+        <div className="flex  items-center gap-3">
+          {/* Mood Field */}
+          <div className="flex flex-1 items-center gap-4">
+            <Label className="text-right">Mood</Label>
+            <div className="col-span-3 w-full">
+              <Controller
+                name="mood"
+                control={control}
+                defaultValue="neutral"
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select your mood" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {moodOptions.map((mood) => (
+                        <SelectItem key={mood.value} value={mood.value}>
+                          <div className="flex items-center">
+                            <SmilePlus className="mr-2 h-4 w-4" />
+                            {mood.label}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+          </div>
 
-        {/* Mood Field */}
-        <div className="flex items-center gap-4">
-          <Label className="text-right">Mood</Label>
-          <div className="col-span-3 w-full">
-            <Controller
-              name="mood"
-              control={control}
-              defaultValue="neutral"
-              render={({ field }) => (
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select your mood" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {moodOptions.map((mood) => (
-                      <SelectItem key={mood.value} value={mood.value}>
-                        <div className="flex items-center">
-                          <SmilePlus className="mr-2 h-4 w-4" />
-                          {mood.label}
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
+          <div className="flex flex-1 items-center gap-2">
+            <Label htmlFor="budget" className="text-right">
+              Budget
+            </Label>
+            <div className="col-span-3 relative w-full">
+              <HandCoins className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+              <Input
+                id="budget"
+                placeholder="Total budget for this travel"
+                {...register("budget")}
+                className="pl-10"
+              />
+            </div>
           </div>
         </div>
 

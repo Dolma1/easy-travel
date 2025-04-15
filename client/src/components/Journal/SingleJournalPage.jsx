@@ -26,7 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  useGetPublicJournalQuery,
+  useGetSingleJournalQuery,
   useDeleteJournalMutation,
 } from "@/app/slices/journalApiSlice";
 
@@ -35,13 +35,11 @@ function SingleJournalPage() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  const { data, isLoading, error, refetch } = useGetPublicJournalQuery();
-  console.log(data)
+  const { data, isLoading, error, refetch } = useGetSingleJournalQuery(id);
   const [deleteJournal, { isLoading: isDeleting }] = useDeleteJournalMutation();
 
-  const journal = data?.allJournals?.find((j) => j._id === id);
+  const journal = data?.journal;
   const isOwner = user?._id === journal?.author?._id;
-  console.log(isOwner)
 
   const stripHtmlTags = (htmlString) => {
     const doc = new DOMParser().parseFromString(htmlString, "text/html");

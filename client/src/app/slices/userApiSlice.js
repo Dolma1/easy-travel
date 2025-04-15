@@ -43,6 +43,20 @@ export const userApiSlice = apiSlice.injectEndpoints({
         credentials: "include",
       }),
     }),
+    getDashboardData: builder.query({
+      query: () => ({
+        url: `${user_url}/dashboard-data`,
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
+    getSettlementsData: builder.query({
+      query: () => ({
+        url: `${user_url}/get-settlements`,
+        method: "GET",
+        credentials: "include",
+      }),
+    }),
 
     updateUserProfile: builder.mutation({
       query: (data) => ({
@@ -62,4 +76,6 @@ export const {
   useLogoutMutation,
   useGetUserProfileQuery,
   useUpdateUserProfileMutation,
+  useGetDashboardDataQuery,
+  useGetSettlementsDataQuery,
 } = userApiSlice;

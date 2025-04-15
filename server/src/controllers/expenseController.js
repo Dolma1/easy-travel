@@ -100,6 +100,7 @@ class ExpenseController {
       const expense = await Expense.create({
         group: groupId,
         description,
+        currency: group.currency,
         amount,
         category,
         paidBy,
@@ -433,86 +434,13 @@ class ExpenseController {
   static settleExpense = asyncHandler(async (req, res, next) => {
     const expenseId = req.params.id;
     const userId = req.user._id;
-    const { note } = req.body;
-
-    /*
-    // Find the expense with group and user details populated
-    const expense = await Expense.findById(expenseId)
-      .populate("paidBy", "name")
-      .populate("splitBetween.user", "name");
-
-    if (!expense) {
-      return next(new ErrorResponse("Expense not found", 404));
-    }
-
-    // Check if user is in splitBetween
-    const userSplit = expense.splitBetween.find((split) =>
-      split.user.equals(userId)
-    );
-
-    if (!userSplit) {
-      return next(
-        new ErrorResponse("User not part of this expense split", 400)
-      );
-    }
-
-    // Store original status for comparison
-    const originalStatus = userSplit.status;
-
-    // Update user's share and status
-    userSplit.share = 0;
-    userSplit.status = "paid";
-
-    // If user was disputing, add resolution note
-    if (originalStatus === "dispute") {
-      expense.notes.push(
-        `${req.user.name}: Resolved their dispute and marked as paid. Note: ${
-          note || "No resolution notes provided"
-        }`
-      );
-    } else {
-      expense.notes.push(`${req.user.name}: ${note || "No notes provided"}`);
-    }
-
-    // Calculate expense status based on all splits
-    const paidCount = expense.splitBetween.filter(
-      (split) => split.status === "paid" || split.share === 0
-    ).length;
-
-    const disputeCount = expense.splitBetween.filter(
-      (split) => split.status === "dispute"
-    ).length;
-
-    const allPaid = paidCount === expense.splitBetween.length;
-    const anyDispute = disputeCount > 0;
-
-    // Determine new expense status
-    if (allPaid) {
-      expense.status = "settled";
-    } else if (anyDispute) {
-      expense.status = "disputed";
-    } else {
-      expense.status = "pending";
-    }
-
-    await expense.save();
-
-    // Create settlement record
-    /*
-    await Settlement.create({
-        expense: expenseId,
-        settledBy: userId,
-        settledWith: expense.paidBy,
-        amount: userSplit.share, // Original share before setting to 0
-        settledAt: new Date(),
-        resolutionNote: originalStatus === 'dispute' ? note : undefined
-    });
-    */
+    const { note, amount } = req.body;
 
     const { expense, originalStatus, allPaid } = await updateSettlement({
       expenseId,
       userId,
       note,
+      amount: amount,
       paymentMethod: "cash",
     });
 
@@ -564,6 +492,8 @@ class ExpenseController {
     }
   });
 
+
+  // Online payment handling
   static initiatePayment = asyncHandler(async (req, res, next) => {
     const { amount, expenseId, paidTo } = req.body;
     const user = await User.findById(req.user._id);
@@ -632,7 +562,9 @@ class ExpenseController {
           amount: paymentInfo.total_amount,
           expenseId,
           note: "Payment made through khalti",
-          userId:userId
+          userId: userId,
+          paymentMethod: "khalti",
+          transactionId: paymentInfo.pidx,
         });
         res.json({
           success: true,
@@ -640,7 +572,7 @@ class ExpenseController {
           paymentInfo,
         });
       } catch (error) {
-        return next(new ErrorHandler(error.message, 400))
+        return next(new ErrorHandler(error.message, 400));
       }
     } else {
       res.status(400).json({
@@ -650,6 +582,7 @@ class ExpenseController {
       });
     }
   });
+  
 }
 
 export default ExpenseController;

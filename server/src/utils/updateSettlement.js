@@ -1,9 +1,11 @@
 import Expense from "../models/ExpenseModel.js";
+import Settlement from "../models/SettlementModel.js";
 import User from "../models/UserModel.js";
 import ErrorHandler from "./ErrorHandler.js";
 const updateSettlement = async (data) => {
   // console.log(data); expenseId, notes,  userId
-  const { expenseId, note, userId } = data;
+  const { expenseId, note, userId, amount, paymentMethod, transactionId } =
+    data;
 
   if (!expenseId || !userId) {
     throw new Error("expenseId and userId are required");
@@ -70,6 +72,20 @@ const updateSettlement = async (data) => {
   }
 
   await expense.save();
+
+  // Save this settlement to the Settlement Model
+  const settlement = await Settlement.create({
+    group: expense.group,
+    expense: expense._id,
+    receiver: expense.paidBy,
+    payer: user._id,
+    amount: amount,
+    currency: expense.currency,
+    status: "completed",
+    paymentMethod: paymentMethod,
+    transactionId: paymentMethod === "khalti" ? transactionId : null,
+    settledAt: new Date(),
+  });
 
   return { allPaid, expense, originalStatus };
 };

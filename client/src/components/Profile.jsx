@@ -260,30 +260,6 @@ function Profile() {
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard
-            icon={BookOpen}
-            label="Total Journal Entries"
-            value={profile.journalStats.totalEntries}
-          />
-          {/* <StatCard
-            icon={Lock}
-            label="Private Entries"
-            value={profile.journalStats.privateEntries}
-          />
-          <StatCard
-            icon={Bookmark}
-            label="Public Entries"
-            value={profile.journalStats.publicEntries}
-          /> */}
-          <StatCard
-            icon={Users}
-            label="Total Groups"
-            value={profile.groupStats.totalGroups}
-          />
-        </div>
-
         {/* Profile Information */}
         <div className="mt-8 grid gap-8 grid-cols-1 lg:grid-cols-2">
           {/* Contact Information */}
@@ -374,9 +350,11 @@ function Profile() {
               className="flex items-center space-x-2 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
             >
               <Check className="w-4 h-4" />
-              {updateLoading ? <span>Saving...</span> :
-              <span>Save Changes</span>
-              }
+              {updateLoading ? (
+                <span>Saving...</span>
+              ) : (
+                <span>Save Changes</span>
+              )}
             </button>
           </div>
         )}

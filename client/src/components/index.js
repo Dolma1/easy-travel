@@ -32,6 +32,7 @@ import AdminSidebar from "./Admin/AdminSidebar";
 import TermsOfService from "./Resources/TermsOfService";
 import Support from "./Resources/Support";
 import PrivacyPolicy1 from "./Resources/PrivacyPolicy1";
+import Report from "./Report";
 
 export {
   Login,
@@ -67,4 +68,5 @@ export {
   PrivacyPolicy1,
   TermsOfService,
   Support,
+  Report,
 };

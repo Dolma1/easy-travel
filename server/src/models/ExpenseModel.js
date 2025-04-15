@@ -18,6 +18,10 @@ const expenseSchema = new mongoose.Schema(
       required: [true, "Amount is required"],
       min: [0, "Amount cannot be negative"],
     },
+    currency: {
+      type: String,
+      default: 'NPR'
+    },
     category: {
       type: String,
       enum: [

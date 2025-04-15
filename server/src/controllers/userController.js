@@ -9,6 +9,11 @@ import sendMail from "../utils/sendMail.js";
 import createActivationToken from "../utils/activation.js";
 import { sendToken } from "../utils/jwt.js";
 import cloudinary from "cloudinary";
+import TravelGroup from "../models/TravelGroupModel.js";
+import Expense from "../models/ExpenseModel.js";
+import Settlement from "../models/SettlementModel.js";
+import Journal from "../models/journalModel.js";
+import mongoose from "mongoose";
 
 class UserController {
   /********** AUTHENTICATION CONTROLLERS **********/
@@ -245,6 +250,221 @@ class UserController {
   });
 
   /********* OTHER CONTROLLERS FOR USER ***********/
-}
+  static getDashboardData = async (req, res, next) => {
+    try {
+      const userId = req.user._id;
+      const today = new Date();
 
+      // 1. Fetch User Profile
+      const user = await User.findById(userId).select(
+        "name avatar bio groupStats"
+      );
+
+      // 2. Fetch Trips (Upcoming, Previous, and Active)
+      const allTrips = await TravelGroup.find({ "members.user": userId })
+        .select("name trip currency budget totalExpenses members creator")
+        .populate("creator", "name avatar")
+        .sort({ "trip.startDate": 1 });
+
+      // Categorize trips by date
+      const upcomingTrips = allTrips.filter(
+        (trip) =>
+          new Date(trip.trip.startDate) > today &&
+          trip.trip.status !== "cancelled"
+      );
+
+      const previousTrips = allTrips.filter(
+        (trip) =>
+          new Date(trip.trip.endDate) < today ||
+          trip.trip.status === "completed"
+      );
+
+      const activeTrips = allTrips.filter(
+        (trip) =>
+          new Date(trip.trip.startDate) <= today &&
+          new Date(trip.trip.endDate) >= today &&
+          trip.trip.status !== "cancelled"
+      );
+
+      // 3. Fetch Financial Data
+      // a. Expenses user PAID directly
+      const paidByUser = await Expense.aggregate([
+        { $match: { paidBy: new mongoose.Types.ObjectId(userId) } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]);
+
+      // b. Expenses user OWES a share of (unpaid splits)
+      const shareOwedByUser = await Expense.aggregate([
+        {
+          $match: {
+            "splitBetween.user": new mongoose.Types.ObjectId(userId),
+            "splitBetween.status": "unpaid",
+          },
+        },
+        { $unwind: "$splitBetween" },
+        {
+          $match: { "splitBetween.user": new mongoose.Types.ObjectId(userId) },
+        },
+        { $group: { _id: null, total: { $sum: "$splitBetween.share" } } },
+      ]);
+
+      // c. Expenses by Category
+      const expensesByCategory = await Expense.aggregate([
+        { $match: { paidBy: new mongoose.Types.ObjectId(userId) } },
+        { $group: { _id: "$category", total: { $sum: "$amount" } } },
+        { $sort: { total: -1 } },
+      ]);
+
+      // Format category data
+      const categoryData = {};
+      expensesByCategory.forEach((item) => {
+        categoryData[item._id] = item.total;
+      });
+
+      const totalPaid = paidByUser[0]?.total || 0;
+      const totalOwed = shareOwedByUser[0]?.total || 0;
+
+      // 4. Recent Expenses (Last 5)
+      const recentExpenses = await Expense.find({
+        $or: [{ paidBy: userId }, { "splitBetween.user": userId }],
+      })
+        .sort({ date: -1 })
+        .limit(5)
+        .populate("group", "name")
+        .populate("paidBy", "name avatar");
+
+      // 5. Pending Settlements (Owed/Receivable)
+      const pendingSettlements = await Settlement.find({
+        $or: [{ payer: userId }, { receiver: userId }],
+        status: { $ne: "completed" },
+      })
+        .populate("payer receiver", "name avatar")
+        .populate("group", "name");
+
+      // 6. Latest Journals
+      const latestJournals = await Journal.find({ author: userId })
+        .sort({ createdAt: -1 })
+        .limit(3)
+        .select("title content mood createdAt location");
+
+      // 7. Journal stats
+      const journalCount = await Journal.countDocuments({ author: userId });
+
+      // 8. Compile Dashboard Response
+      const dashboardData = {
+        profile: {
+          name: user.name,
+          avatar: user.avatar,
+          bio: user.bio,
+          totalTrips: allTrips.length,
+          journalCount: journalCount,
+          groupStats: user.groupStats,
+        },
+        trips: {
+          upcoming: upcomingTrips.map((trip) => ({
+            id: trip._id,
+            name: trip.name,
+            destination: trip.trip.destination,
+            startDate: trip.trip.startDate,
+            endDate: trip.trip.endDate,
+            status: trip.trip.status,
+            memberCount: trip.members.length,
+            creator: trip.creator,
+          })),
+          previous: previousTrips.map((trip) => ({
+            id: trip._id,
+            name: trip.name,
+            destination: trip.trip.destination,
+            startDate: trip.trip.startDate,
+            endDate: trip.trip.endDate,
+            status: trip.trip.status,
+            memberCount: trip.members.length,
+            creator: trip.creator,
+          })),
+          active: activeTrips.map((trip) => ({
+            id: trip._id,
+            name: trip.name,
+            destination: trip.trip.destination,
+            startDate: trip.trip.startDate,
+            endDate: trip.trip.endDate,
+            status: trip.trip.status,
+            memberCount: trip.members.length,
+            creator: trip.creator,
+          })),
+        },
+        finances: {
+          summary: {
+            totalPaid,
+            totalOwed,
+            netBalance: totalPaid - totalOwed,
+          },
+          categoryBreakdown: categoryData,
+          recentExpenses: recentExpenses.map((expense) => ({
+            id: expense._id,
+            description: expense.description,
+            amount: expense.amount,
+            category: expense.category,
+            date: expense.date,
+            paidBy: expense.paidBy,
+            group: expense.group,
+            currency: expense.currency,
+          })),
+          pendingSettlements: pendingSettlements.map((settlement) => ({
+            id: settlement._id,
+            amount: settlement.amount,
+            status: settlement.status,
+            payer: settlement.payer,
+            receiver: settlement.receiver,
+            group: settlement.group,
+          })),
+        },
+        activity: {
+          latestJournals: latestJournals.map((journal) => ({
+            id: journal._id,
+            title: journal.title,
+            content:
+              journal.content?.substring(0, 100) +
+              (journal.content?.length > 100 ? "..." : ""),
+            mood: journal.mood,
+            date: journal.createdAt,
+            location: journal.location,
+          })),
+        },
+      };
+
+      return res.status(200).json({
+        success: true,
+        dashboardData,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  };
+
+  static getSettlements = asyncHandler(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user._id);
+
+      // Get settlements where the user is the payer
+      const paidSettlements = await Settlement.find({ payer: user._id })
+        .populate("receiver", "name email") // who received the payment
+        .populate("group", "name")
+        .populate("expense", "description amount");
+
+      // Get settlements where the user is the receiver
+      const receivedSettlements = await Settlement.find({ receiver: user._id })
+        .populate("payer", "name email") // who paid the user
+        .populate("group", "name")
+        .populate("expense", "description amount");
+
+      res.status(200).json({
+        success: true,
+        paidSettlements, // user paid others
+        receivedSettlements, // user received from others
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  });
+}
 export default UserController;

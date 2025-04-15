@@ -66,7 +66,7 @@ function ListGroup() {
           </div>
           <div className="flex gap-4 items-center -mt-5 ">
             <AddGroup />
-            <JoinGroup />
+            <JoinGroup refetch={refetch} />
           </div>
         </div>
         <ScrollArea className="h-[calc(100vh-176px)]">

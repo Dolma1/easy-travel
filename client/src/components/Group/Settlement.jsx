@@ -79,8 +79,6 @@ const Settlement = () => {
       document.title,
       `/groups/settlements/${expenseId}`
     );
-    // TODO: console.log(id); This is undefined+
-    console.log(groupId);
     if (groupId) {
       navigate(`/groups/${groupId}`);
       localStorage.removeItem("groupId");
@@ -98,12 +96,13 @@ const Settlement = () => {
     day: "numeric",
   });
 
-  const handleSettlement = async (action) => {
+  const handleSettlement = async (action, amount) => {
     try {
       const data = {
         expenseId,
         payment: selectedPaymentMethod,
         note,
+        amount,
       };
       if (action === "settle") {
         const response = await expenseSettlement(data).unwrap();
@@ -131,7 +130,7 @@ const Settlement = () => {
     0;
 
   const initiatePayment = async (data) => {
-    console.log(data);
+    // console.log(data);
     try {
       const response = await initiateKhalti(data).unwrap();
       console.log(response);
@@ -139,7 +138,7 @@ const Settlement = () => {
         window.location.href = response?.payment_url;
       }
       if (response.error) {
-        toast.error(error.data.message);
+        toast.error(response.error.data.message);
       }
     } catch (error) {
       toast.error(error.data?.message || "Payment initation failed");
@@ -161,7 +160,10 @@ const Settlement = () => {
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
             {/* Header */}
             <div className="bg-gradient-to-r from-[#5751b8] to-[#3b358e] px-6 py-4 text-white">
-              <h1 className="text-3xl font-bold mb-2">₹{expense.amount}</h1>
+              <h1 className="text-3xl font-bold mb-2">
+                {" "}
+                {expense?.currency} {expense.amount}
+              </h1>
               <p className="text-blue-100">{expense.description}</p>
               <div className="mt-4 flex items-center">
                 <Avatar>
@@ -247,7 +249,7 @@ const Settlement = () => {
                       </div>
                       <div className="flex items-center space-x-4">
                         <span className="font-semibold text-lg">
-                          ₹{split.share}
+                          {expense?.currency} {split.share}
                         </span>
                         <Button
                           onClick={() => {
@@ -372,7 +374,9 @@ const Settlement = () => {
                         {selectedAction === "settle" &&
                           selectedPaymentMethod === "cash" && (
                             <Button
-                              onClick={() => handleSettlement("settle")}
+                              onClick={() =>
+                                handleSettlement("settle", userShare)
+                              }
                               className={`flex-1 px-4 py-2 text-white rounded-lg ${
                                 selectedPaymentMethod === "cash"
                                   ? "text-black"

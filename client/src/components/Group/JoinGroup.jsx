@@ -48,7 +48,6 @@ const JoinGroup = ({ refetch }) => {
   const joinGroupHandler = async (groupId) => {
     try {
       const res = await joinGroup({ groupId }).unwrap();
-      console.log(res);
       if (res.success) {
         setGroupInfo((prevState) => ({
           ...prevState,
@@ -228,8 +227,6 @@ const JoinGroup = ({ refetch }) => {
                   </div>
                 </div>
               </div>
-              {/* Action Button */}
-              {console.log(groupInfo)}
               <Button
                 className="w-64 rounded-lg font-medium flex   mx-auto space-x-2"
                 disabled={isLoading}

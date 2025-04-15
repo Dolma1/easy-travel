@@ -50,6 +50,7 @@ export default function AddJournal() {
     defaultValues: {
       isPrivate: true,
       mood: "neutral",
+      budget: "",
       content: "",
       images: [],
     },
@@ -66,7 +67,7 @@ export default function AddJournal() {
     try {
       const updatedData = { ...data, tags };
       const res = await createJournal(updatedData).unwrap();
-      
+
       refetch();
       toast.success("Journal entry created successfully!");
       setOpen(false);
