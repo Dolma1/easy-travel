@@ -38,13 +38,13 @@ const userSchema = new mongoose.Schema(
     address: {
       type: String,
     },
- 
+
     phone: {
       type: String,
     },
 
-    journalStats:{
-      type:Number
+    journalStats: {
+      type: Number,
     },
 
     groupStats: {
@@ -70,6 +70,10 @@ const userSchema = new mongoose.Schema(
     avatar: {
       public_id: String,
       url: String,
+    },
+    isBanned: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

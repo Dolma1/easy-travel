@@ -130,6 +130,7 @@ class UserController {
       }
       const user = await User.findOne({ email }).select("+password");
 
+
       if (!user) {
         return next(new ErrorHandler("Invalid Email or Password", 400));
       }
@@ -139,7 +140,12 @@ class UserController {
       if (!isPasswordMatch) {
         return next(new ErrorHandler("Invalid Email or Password", 400));
       }
-
+      if(user.isBanned){
+        return next(new ErrorHandler("You have been banned..", 400))
+      }
+      if(!user.isVerified){
+        return next(new ErrorHandler("You are not verified yet.", 400))
+      }
       sendToken(user._id, res);
 
       delete user._doc.password;

@@ -33,6 +33,11 @@ import TermsOfService from "./Resources/TermsOfService";
 import Support from "./Resources/Support";
 import PrivacyPolicy1 from "./Resources/PrivacyPolicy1";
 import Report from "./Report";
+//Admin
+import AdminAllUsers from "./Admin/AdminAllUsers";
+import AdminAllJournal from "./Admin/AdminAllJournal";
+import AdminAllGroup from "./Admin/AdminAllGroup";
+import AdminAllSettlements from "./Admin/AdminAllSettlements";
 
 export {
   Login,
@@ -69,4 +74,8 @@ export {
   TermsOfService,
   Support,
   Report,
+  AdminAllUsers,
+  AdminAllJournal,
+  AdminAllGroup,
+  AdminAllSettlements,
 };

@@ -13,6 +13,10 @@ import {
   PrivacyPolicy1,
   Support,
   AdminDashboard,
+  AdminAllJournal,
+  AdminAllUsers,
+  AdminAllGroup,
+  AdminAllSettlements,
 } from "./components";
 import { Provider } from "react-redux";
 
@@ -142,7 +146,7 @@ const router = createBrowserRouter([
           </AuthLayout>
         ),
       },
-      
+
       {
         path: "/explore",
         element: (
@@ -176,34 +180,66 @@ const router = createBrowserRouter([
         ),
       },
 
-
       {
         path: "*",
         element: <PageNotFound />,
       },
-    ],
-  },
 
-  //Admin
-  {
-    path: "/admin",
-    element: <AdminPage />,
-    children: [
+      //Admin
       {
-        index: true,
-        element: (
-          <AdminLayout>
-            <AdminDashboard />
-          </AdminLayout>
-        ),
+        path: "/admin",
+        element: <AdminPage />,
+        children: [
+          {
+            index: true,
+            element: (
+              <AdminLayout>
+                <AdminDashboard />
+              </AdminLayout>
+            ),
+          },
+          // admin
+          {
+            path: "all-journals",
+            element: (
+              <AuthLayout authentication={true}>
+                <AdminAllJournal />
+              </AuthLayout>
+            ),
+          },
+          {
+            path: "all-users",
+            element: (
+              <AuthLayout authentication={true}>
+                <AdminAllUsers />
+              </AuthLayout>
+            ),
+          },
+          {
+            path: "all-groups",
+            element: (
+              <AuthLayout authentication={true}>
+                <AdminAllGroup />
+              </AuthLayout>
+            ),
+          },
+          {
+            path: "settlements",
+            element: (
+              <AuthLayout authentication={true}>
+                <AdminAllSettlements />
+              </AuthLayout>
+            ),
+          },
+        ],
       },
     ],
   },
 ]);
 createRoot(document.getElementById("root")).render(
   // <StrictMode>
-    <Provider store={store}>
-      <RouterProvider router={router} />
-    </Provider>
+  <Provider store={store}>
+    <RouterProvider router={router} />
+  </Provider>
   // </StrictMode>
 );

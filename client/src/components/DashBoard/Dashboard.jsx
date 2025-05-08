@@ -97,7 +97,7 @@ function Dashboard() {
                     <BadgeDollarSignIcon className="h-6 w-6 text-blue-700 dark:text-blue-300" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Paid</p>
+                    <p className="text-sm text-muted-foreground">Total Received</p>
                     <p className="text-2xl font-bold">
                       Rs.{formatCurrency(totalPaid)}
                     </p>
@@ -111,7 +111,7 @@ function Dashboard() {
                     <TrendingDownIcon className="h-6 w-6 text-red-700 dark:text-red-300" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Total Owned</p>
+                    <p className="text-sm text-muted-foreground">Total Owed</p>
                     <p className="text-2xl font-bold">
                       Rs.{formatCurrency(totalOwed)}
                     </p>
@@ -177,7 +177,7 @@ function Dashboard() {
                       </div>
                     ))}
 
-                    {searchData.length === 0 && (
+                    {searchData.length === 0 && recentExpenses.length === 0 && (
                       <div className="text-center py-4 text-muted-foreground">
                         No expenses found
                       </div>

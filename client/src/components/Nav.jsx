@@ -31,7 +31,7 @@ const Nav = () => {
 
   return (
     <nav className="fixed w-full top-0 z-50 ">
-      <div className="bg-white/80 backdrop-blur-md border-b border-gray-100">
+      <div className="bg-[#e8e2dc] backdrop-blur-md border-b border-gray-100">
         <div className="h-20  px-4 md:px-10 lg:px-20">
           <div className="h-full flex items-center justify-between">
             {/* Logo */}
@@ -67,12 +67,12 @@ const Nav = () => {
                 <span>Features</span>
               </button>
 
-              <button
+              {/* <button
                 onClick={() => scrollToSection("solutions")}
                 className="flex items-center space-x-1 text-gray-600 hover:text-indigo-600 font-medium transition-colors"
               >
                 <span>Solutions</span>
-              </button>
+              </button> */}
               <button
                 onClick={() => scrollToSection("about")}
                 className="flex items-center space-x-1 text-gray-600 hover:text-indigo-600 font-medium transition-colors"

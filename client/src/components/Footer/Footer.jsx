@@ -89,23 +89,23 @@ const Footer = () => {
           >
             <span>Works</span>
           </button>
-          <button
+          {/* <button
             onClick={() => scrollToSection("solutions")}
             className="block hover:text-gray-600 transition-colors py-1"
           >
             <span>Solutions</span>
-          </button>
+          </button> */}
         </div>
 
         {/* Additional Sections */}
         <div className="flex-1 min-w-[150px]">
           <h2 className="font-semibold mb-2">Resources</h2>
-          <button
+          {/* <button
             onClick={() => scrollToSection("faq")}
             className="block hover:text-gray-600 transition-colors py-1"
           >
             <span>FAQs</span>
-          </button>
+          </button> */}
           <Link
             to="/terms"
             className="block hover:text-gray-600 transition-colors py-1"

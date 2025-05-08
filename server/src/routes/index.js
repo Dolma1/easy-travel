@@ -4,6 +4,7 @@ import journalRouter from "./journalRoutes.js";
 import travelGroupRouter from "./travelgroupRoutes.js";
 import expenseRouter from "./expenseRouter.js";
 import travelRouter from "./travelgroupRoutes.js";
+import adminRouter from "./adminRoutes.js";
 const router = Router();
 
 // * ROUTES FOR THE USER
@@ -20,6 +21,7 @@ router.use("/api/v1/expense", expenseRouter);
 
 // * ROUTES FOR THE Travel
 router.use("/api/v1/travelGroup", travelRouter);
+router.use("/api/v1/admin", adminRouter);
 // * ROUTES FOR THE SETTLEMENT
 // router.use("/api/v1/settlement");
 

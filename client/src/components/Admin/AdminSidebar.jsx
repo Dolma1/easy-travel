@@ -1,13 +1,12 @@
 import { useState } from "react";
 import {
   LayoutDashboard,
-  PieChart,
-  Settings,
   Menu,
   NotebookPen,
-  UsersRound,
   Layers,
-  NotebookTabs,
+  Users2,
+  Handshake,
+  MapPinned,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,10 @@ const SideBar = () => {
       label: "Dashboard",
       href: "/admin",
     },
-    { icon: NotebookPen, label: "My Journal", href: "/admin/journal" },
+    { icon: NotebookPen, label: "Journal", href: "/admin/all-journals" },
+    { icon: MapPinned, label: "Travels Groups", href: "/admin/all-groups" },
+    { icon: Users2, label: "Users", href: "/admin/all-users" },
+    { icon: Handshake, label: "Settlement", href: "/admin/settlements" },
   ];
 
   return (

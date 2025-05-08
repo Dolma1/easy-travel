@@ -84,7 +84,6 @@ export default function ExploreJournalList() {
               View the Journals Written by fellow travellers
             </p>
           </div>
-          <AddJournal />
         </div>
 
         <ScrollArea className="h-[calc(100vh-29vh)] ">

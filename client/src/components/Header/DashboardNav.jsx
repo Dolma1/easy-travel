@@ -38,7 +38,6 @@ const DashboardNav = ({ SearchData, setSearchData, originalData }) => {
   return (
     <div className="top-0 left-[211px] right-0 h-16 bg-white border-b border-gray-200 px-8 flex items-center justify-between z-10 backdrop-blur-sm bg-white/90">
       <div className="flex items-center gap-4 flex-1 max-w-xl">
-        <p className="font-semibold text-xl">Dashboard</p>
       </div>
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-3 ml-4">
