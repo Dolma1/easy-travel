@@ -180,8 +180,8 @@ class AdminController {
       return res.status(200).json({
         success: true,
         message: user.isBanned
-          ? "User unbanned successfully"
-          : "User banned Successfully",
+          ? "User banned successfully"
+          : "User unbanned Successfully",
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));

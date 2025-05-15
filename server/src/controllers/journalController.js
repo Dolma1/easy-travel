@@ -3,6 +3,7 @@ import cloudinary from "cloudinary";
 import { asyncHandler } from "../middlewares/asyncHandler.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import Journal from "../models/journalModel.js";
+import TravelGroup from "../models/TravelGroupModel.js";
 
 class JournalController {
   static createJournal = asyncHandler(async (req, res, next) => {
@@ -97,7 +98,7 @@ class JournalController {
     }
   });
 
-  static getPublicJournal = asyncHandler(async (req, res, next) => {
+ static getExploreJournals = asyncHandler(async (req, res, next) => {
     try {
       const allJournals = await Journal.find({
         isPrivate: false,
@@ -108,7 +109,48 @@ class JournalController {
           message: "No Journals Found",
         });
       }
-      return res.status(200).json({ success: true, allJournals });
+      
+      const userId = req.user._id;
+    
+    // 1. Find all groups where user is either creator or member
+    const userGroups = await TravelGroup.find({
+      $or: [
+        { creator: userId },
+        { "members.user": userId }
+      ]
+    });
+    
+    // 2. Extract unique destinations from these groups
+    const groupDestinations = [...new Set(
+      userGroups.map(group => group.trip.destination).filter(Boolean)
+    )];
+    
+    const query = {
+      isPrivate: false,
+      author: { $ne: userId }
+    };
+    
+    if (groupDestinations.length > 0) {
+      query.location = { $in: groupDestinations };
+    }
+    
+    const recommendedJournals = await Journal.find(query)
+      .populate("author", "name");
+    
+    if (!recommendedJournals || recommendedJournals.length === 0) {
+      return res.status(200).json({
+        success: true,
+        allJournals,
+        recommendedJournals: [],
+        message: "Public Journals Found",
+      });
+    }
+    
+    return res.status(200).json({ 
+      success: true, 
+      allJournals,
+      recommendedJournals,
+    });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }

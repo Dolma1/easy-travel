@@ -78,9 +78,7 @@ function AdminAllUsers() {
 
       if (response.success) {
         toast.success(
-          response.isBanned
-            ? "User banned successfully"
-            : "User unbanned successfully"
+          response.message
         );
         refetch();
         setShowBanDialog(false);
