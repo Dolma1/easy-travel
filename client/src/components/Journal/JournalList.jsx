@@ -7,7 +7,7 @@ import {
 import { useSelector } from "react-redux";
 
 import { Link } from "react-router-dom";
-import { Pen, Trash2, Heart, MapPin, Tag } from "lucide-react";
+import { Pen, Trash2, Heart, MapPin, Tag, CircleDollarSign } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -211,6 +211,13 @@ export default function JournalList() {
                           <span className="inline-flex items-center px-3 py-1.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 rounded-full">
                             <Tag className="w-4 h-4 mr-1.5" />
                             {journal.tag}
+                          </span>
+                        )}
+
+                        {journal.budget && (
+                          <span className="inline-flex items-center justify-self-end px-3 py-1.5 bg-blue-50 text-[#554CCF] dark:bg-blue-900/50 dark:text-blue-300 rounded-full text-sm">
+                            <CircleDollarSign className="w-4 h-4 mr-1.5" />
+                            {journal?.budget}
                           </span>
                         )}
                       </div>

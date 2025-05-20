@@ -4,7 +4,7 @@ import { asyncHandler } from "../middlewares/asyncHandler.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
 import Journal from "../models/journalModel.js";
 import TravelGroup from "../models/TravelGroupModel.js";
-
+import cron from "node-cron";
 class JournalController {
   static createJournal = asyncHandler(async (req, res, next) => {
     try {
@@ -24,7 +24,7 @@ class JournalController {
           content: "Content is required",
           tags: "At least one Tag is required",
           images: "At least one image is required",
-          budget:"Budject is required"
+          budget: "Budject is required",
         };
         return next(new ErrorHandler("Journal Creation Failed!", 404, errors));
       }
@@ -98,7 +98,7 @@ class JournalController {
     }
   });
 
- static getExploreJournals = asyncHandler(async (req, res, next) => {
+  static getExploreJournals = asyncHandler(async (req, res, next) => {
     try {
       const allJournals = await Journal.find({
         isPrivate: false,
@@ -109,48 +109,59 @@ class JournalController {
           message: "No Journals Found",
         });
       }
-      
+
       const userId = req.user._id;
-    
-    // 1. Find all groups where user is either creator or member
-    const userGroups = await TravelGroup.find({
-      $or: [
-        { creator: userId },
-        { "members.user": userId }
-      ]
-    });
-    
-    // 2. Extract unique destinations from these groups
-    const groupDestinations = [...new Set(
-      userGroups.map(group => group.trip.destination).filter(Boolean)
-    )];
-    
-    const query = {
-      isPrivate: false,
-      author: { $ne: userId }
-    };
-    
-    if (groupDestinations.length > 0) {
-      query.location = { $in: groupDestinations };
-    }
-    
-    const recommendedJournals = await Journal.find(query)
-      .populate("author", "name");
-    
-    if (!recommendedJournals || recommendedJournals.length === 0) {
+
+      // 1. Find all groups where user is either creator or member
+      const userGroups = await TravelGroup.find({
+        $and: [
+          { $or: [{ creator: userId }, { "members.user": userId }] },
+          { "trip.endDate": { $gt: new Date() } },
+        ],
+      });
+
+      // 2. Extract unique destinations from these groups
+      const groupDestinations = [
+        ...new Set(
+          userGroups.map((group) => group.trip.destination).filter(Boolean)
+        ),
+      ];
+
+      const query = {
+        isPrivate: false,
+        author: { $ne: userId },
+      };
+
+      if (groupDestinations.length > 0) {
+        query.location = { $in: groupDestinations };
+      } else {
+        return res.status(200).json({
+          success: true,
+          allJournals,
+          recommendedJournals: [],
+          message: "Public Journals Found",
+        });
+      }
+
+      const recommendedJournals = await Journal.find(query).populate(
+        "author",
+        "name"
+      );
+
+      if (!recommendedJournals || recommendedJournals.length === 0) {
+        return res.status(200).json({
+          success: true,
+          allJournals,
+          recommendedJournals: [],
+          message: "Public Journals Found",
+        });
+      }
+
       return res.status(200).json({
         success: true,
         allJournals,
-        recommendedJournals: [],
-        message: "Public Journals Found",
+        recommendedJournals,
       });
-    }
-    
-    return res.status(200).json({ 
-      success: true, 
-      allJournals,
-      recommendedJournals,
-    });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
@@ -199,7 +210,7 @@ class JournalController {
           budget,
           images: imagesLinks,
           isPrivate,
-          budget
+          budget,
         },
         {
           new: true,
@@ -262,5 +273,16 @@ class JournalController {
     }
   });
 }
+
+
+cron.schedule("0 0 * * *", async () => {
+  try {
+    const result = await TravelGroup.updateExpiredGroups();
+    console.log(`Updated ${result.modifiedCount} expired groups.`);
+  } catch (err) {
+    console.error("Error updating expired groups:", err);
+  }
+});
+
 
 export default JournalController;

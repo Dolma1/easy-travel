@@ -167,6 +167,12 @@ export default function GroupFormfield({
                 min: { value: 0, message: "Budget cannot be negative" },
                 valueAsNumber: true,
               })}
+              onInput={(e) => {
+                if (e.target.value < 0) {
+                  e.target.value = 0;
+                  setValue("budget", 0);
+                }
+              }}
               className="flex-1 ml-2"
             />
           </div>

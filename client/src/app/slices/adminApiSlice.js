@@ -78,5 +78,5 @@ export const {
   useGetGroupsQuery,
   useGetSettlementsQuery,
   useGetDashboardDataMutation,
-  useRemoveJournalMutation
+  useRemoveJournalMutation,
 } = adminApiSlice;

@@ -1,6 +1,17 @@
 import { useState } from "react";
-import { useGetJournalsQuery, useRemoveJournalMutation } from "@/app/slices/adminApiSlice";
-import { Search, RefreshCw, Book, Trash2, TrashIcon, Trash2Icon, CloudCog } from "lucide-react";
+import {
+  useGetJournalsQuery,
+  useRemoveJournalMutation,
+} from "@/app/slices/adminApiSlice";
+import {
+  Search,
+  RefreshCw,
+  Book,
+  Trash2,
+  TrashIcon,
+  Trash2Icon,
+  CloudCog,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -44,18 +55,18 @@ const AdminAllJournal = () => {
     );
   }
 
-  const handleRemoveJournal =  async (id) =>{
-    console.log(id)
+  const handleRemoveJournal = async (id) => {
+    console.log(id);
     try {
       const response = await removeJournal(id).unwrap();
-      if(response.success){
-        toast.success(response.message)
+      if (response.success) {
+        toast.success(response.message);
         refetch();
       }
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
-  }
+  };
 
   // Filter journals based on search term
   const filteredJournals =
@@ -189,14 +200,13 @@ const AdminAllJournal = () => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Button 
-                    className="bg-red-600 hover:bg-red-600 text-white p-4 " 
-                    onClick={(e) =>handleRemoveJournal(journal._id)}
+                    <Button
+                      className="bg-red-600 hover:bg-red-600 text-white p-4 "
+                      onClick={(e) => handleRemoveJournal(journal._id)}
                     >
                       <Trash2Icon className="w-5 h-5" />
                     </Button>
                   </TableCell>
-
                 </TableRow>
               ))
             ) : (

@@ -177,7 +177,7 @@ function Dashboard() {
                       </div>
                     ))}
 
-                    {searchData.length === 0 && recentExpenses.length === 0 && (
+                    {searchData.length === 0 && (
                       <div className="text-center py-4 text-muted-foreground">
                         No expenses found
                       </div>

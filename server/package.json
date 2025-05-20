@@ -24,6 +24,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.1",
+    "node-cron": "^4.0.5",
     "nodemailer": "^6.9.16",
     "uuid": "^11.0.5"
   },

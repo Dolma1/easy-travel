@@ -408,7 +408,7 @@ function SingleGroup() {
                               </div>
                               <div className="flex items-center gap-2 text-sm text-gray-600">
                                 <Users className="w-4 h-4 text-green-500" />
-                                Total Amount: NPR{" "}
+                                Total Amount : {groupData?.group?.currency}{" "}
                                 {receivable.totalAmount.toFixed(0)}
                               </div>
                               <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -421,7 +421,8 @@ function SingleGroup() {
                           <div className="ml-6">
                             <p className="text-md font-bold flex gap-2 bg-green-100 text-green-700 p-1.5 rounded-2xl">
                               <Wallet />
-                              NPR {receivable.owedToYou.toFixed(0)}
+                              {groupData?.group?.currency}{" "}
+                              {receivable.owedToYou.toFixed(0)}
                             </p>
                           </div>
                         </div>
@@ -463,7 +464,8 @@ function SingleGroup() {
                       <div className="ml-6">
                         <p className="text-md font-bold flex gap-2 bg-red-100 text-red-700 p-1.5 rounded-2xl">
                           <Wallet />
-                          NPR {debt.amount.toFixed(0)}
+                          {groupData?.group?.currency}
+                          {debt.amount.toFixed(0)}
                         </p>
                       </div>
                     </div>

@@ -15,7 +15,7 @@ const HomePage = () => {
   return (
     <>
       <Header />
-      <section id="top" className="bg-gray-300  ">
+      <section id="top" className="bg-gray-100  ">
         <Top />
       </section>
       <section className="bg-[#EEEEEE]">

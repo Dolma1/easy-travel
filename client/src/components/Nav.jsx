@@ -31,7 +31,7 @@ const Nav = () => {
 
   return (
     <nav className="fixed w-full top-0 z-50 ">
-      <div className="bg-[#e8e2dc] backdrop-blur-md border-b border-gray-100">
+      <div className="bg-[#ffffff] backdrop-blur-md border-b border-gray-100">
         <div className="h-20  px-4 md:px-10 lg:px-20">
           <div className="h-full flex items-center justify-between">
             {/* Logo */}
@@ -127,13 +127,6 @@ const Nav = () => {
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuSeparator />
-
-                      <Link to="/settings">
-                        <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 p-3">
-                          <Settings className="mr-2 ml-2" />
-                          <span className="font-medium text-md">Settings</span>
-                        </DropdownMenuItem>
-                      </Link>
                       <DropdownMenuSeparator />
                       <LogoutButton className="bg-no w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/50" />
                     </DropdownMenuContent>

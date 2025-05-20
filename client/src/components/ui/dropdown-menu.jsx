@@ -114,6 +114,7 @@ const DropdownMenuLabel = React.forwardRef(({ className, inset, ...props }, ref)
     className={cn("px-2 py-1.5 text-sm font-semibold", inset && "pl-8", className)}
     {...props} />
 ))
+
 DropdownMenuLabel.displayName = DropdownMenuPrimitive.Label.displayName
 
 const DropdownMenuSeparator = React.forwardRef(({ className, ...props }, ref) => (

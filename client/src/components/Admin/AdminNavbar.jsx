@@ -60,12 +60,6 @@ const AdminNavbar = () => {
                   </Link>
                   <DropdownMenuSeparator />
 
-                  <Link to="/settings">
-                    <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 p-3">
-                      <Settings className="mr-2 ml-2" />
-                      <span className="font-medium text-md">Settings</span>
-                    </DropdownMenuItem>
-                  </Link>
                   <DropdownMenuSeparator />
                   <LogoutButton className="bg-no w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-100 dark:hover:bg-red-900/50" />
                 </DropdownMenuContent>

@@ -35,6 +35,7 @@ export default function ExpensesFromfield({
   existingImages,
   paymentOptions,
   categoryOptions,
+  setValue,
   groupMembers = [],
 }) {
   const userdata = useSelector((state) => state.auth?.user);
@@ -172,9 +173,16 @@ export default function ExpensesFromfield({
               className="flex-1"
               {...register("amount", {
                 required: "Amount is required",
-                min: { value: 0, message: "Amount cannot be negative" },
+                min: { value: 1, message: "Amount cannot be Zero" },
                 valueAsNumber: true,
               })}
+
+              onInput={(e) => {
+                if (e.target.value < 0) {
+                  e.target.value = 0;
+                  setValue("amount", 0); 
+                }
+              }}
             />
           </div>
           {errors.amount && (

@@ -11,6 +11,8 @@ import {
   Edit,
   Trash2,
   User,
+  DollarSignIcon,
+  CircleDollarSign,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -188,9 +190,15 @@ function SingleJournalPage() {
                     </span>
                   )}
                   {journal.author && (
-                    <span className="inline-flex items-centerm justify-self-end px-3 py-1.5 bg-blue-50 text-sky-500 dark:bg-blue-900/50 dark:text-blue-300 rounded-full text-sm">
+                    <span className="inline-flex items-center justify-self-end px-3 py-1.5 bg-blue-50 text-sky-500 dark:bg-blue-900/50 dark:text-blue-300 rounded-full text-sm">
                       <User className="w-4 h-4 mr-1.5" />
                       Author : {journal.author?.name}
+                    </span>
+                  )}
+                  {journal.budget && (
+                    <span className="inline-flex items-center justify-self-end px-3 py-1.5 bg-blue-50 text-[#554CCF] dark:bg-blue-900/50 dark:text-blue-300 rounded-full text-sm">
+                      <CircleDollarSign className="w-4 h-4 mr-1.5" />
+                      {journal?.budget}
                     </span>
                   )}
                   {journal.tag && (

@@ -73,6 +73,26 @@ const travelGroupSchema = new mongoose.Schema(
   }
 );
 
+travelGroupSchema.statics.updateExpiredGroups = async function () {
+  const now = new Date();
+
+  // Find and update all groups where endDate has passed but isActive is still true
+  const result = await this.updateMany(
+    {
+      "trip.endDate": { $lte: now },
+      isActive: true, // Only update if still marked active
+    },
+    {
+      $set: {
+        isActive: false,
+        "trip.status": "completed",
+      },
+    }
+  );
+
+  return result;
+};
+
 const TravelGroup = mongoose.model("TravelGroup", travelGroupSchema);
 
 export default TravelGroup;

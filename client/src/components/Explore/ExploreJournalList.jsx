@@ -2,7 +2,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { useGetPublicJournalQuery } from "@/app/slices/journalApiSlice";
 import { Link } from "react-router-dom";
-import { Heart, MapPin, Tag } from "lucide-react";
+import { CircleDollarSign, Heart, MapPin, Tag } from "lucide-react";
 import { AddJournal, DashboardNav } from "..";
 import { useEffect, useState } from "react";
 
@@ -138,6 +138,13 @@ export default function ExploreJournalList() {
                             <span className="inline-flex items-center px-3 py-1.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 rounded-full">
                               <Tag className="w-4 h-4 mr-1.5" />
                               {journal.tag}
+                            </span>
+                          )}
+
+                          {journal.budget && (
+                            <span className="inline-flex items-center justify-self-end px-3 py-1.5 bg-blue-50 text-[#554CCF] dark:bg-blue-900/50 dark:text-blue-300 rounded-full text-sm">
+                              <CircleDollarSign className="w-4 h-4 mr-1.5" />
+                              {journal?.budget}
                             </span>
                           )}
                         </div>
